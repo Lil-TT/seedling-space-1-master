@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  /* 定义全局颜色变量 */
+  --color-morandi-blue: #9BB7D4;
+  --color-morandi-green: #A5BAAA;
+  --color-morandi-yellow: #E1CFB2;
+  --color-morandi-red: #D5A7A1;
+  --color-morandi-gray: #B6B6B6;
+  --color-background: #F5F5F3;
+
+  /* 自定义圆角大小，对应你的“大圆角卡片”设计 */
+  --radius-3xl: 1.5rem;
+}
+
+/* 基础样式重置与设定 */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: #1f2937; /* 相当于 text-gray-800 */
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden; /* 防止动效导致页面横向滚动 */
+  }
+}
+
+/* 为 GSAP 预留的工具类 */
+@layer utilities {
+  .gsap-reveal {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
