@@ -7,8 +7,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Lenis from "lenis";
 import RivePlayer from "@rive-app/react-canvas";
+import Footer from "@/components/layout/Footer";
 
-import { coreCardsData, achievementsData, assetConfigs } from "@/lib/dashboard-data";
+import { coreCardsData, achievementsData, assetConfigs, numbersData, articlesData, brandsRow1, brandsRow2 } from "@/lib/dashboard-data";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -118,6 +119,20 @@ export default function Dashboard() {
         });
       });
 
+      // 7. 数据里程碑卡片入场动画 (Numbers Stack)
+      gsap.utils.toArray<HTMLElement>(".number-card").forEach((card) => {
+        gsap.from(card, {
+          y: 80,
+          opacity: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+          }
+        });
+      });
+
       return () => {
         lenis.destroy();
         ticker.remove((time) => lenis.raf(time * 1000));
@@ -153,7 +168,7 @@ export default function Dashboard() {
           前景顶层 (z-10)：随着鼠标滚动滑上来的所有内容
           包含 Rive人物、绿色底座、卡片、SVG线条等
       ========================================================= */}
-      <div className="scrolling-content relative z-10 w-full mt-[-35vh] pb-32 overflow-hidden pointer-events-none ">
+      <div className="scrolling-content relative z-10 w-full mt-[-35vh] pb-32 pointer-events-none ">
 
         {/* --- 顶部插画：绿色波浪底座 + Rive人物 --- */}
         {/* 这里使用负的 margin-top 使得初始状态下，人物的头部能在第一屏底部露出来 */}
@@ -269,6 +284,101 @@ export default function Dashboard() {
           </section>
         </div>
 
+        {/* =========================================================
+              数据里程碑 (Numbers Stack) - Sticky 交互
+          ========================================================= */}
+        {/* 里程碑模块，加上 number-card 类名供 GSAP 抓取 */}
+        <section className="container mx-auto px-6 py-32 relative z-20 bg-background pointer-events-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            {/* 左侧：固定不动的文字区域 (确保父级相对定位且无高度限制) */}
+            <div className="lg:col-span-5 relative h-full">
+              <div className="sticky top-[30vh]">
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+                  A few numbers behind the <strong className="text-morandi-red">insights</strong> we deliver
+                </h2>
+                <p className="text-lg text-slate-600 max-w-md">
+                  These numbers are more than just milestones. They represent the strength of our connections, the consistency of our work, and the real-world impact we help create for you.
+                </p>
+              </div>
+            </div>
+            
+            {/* 右侧：滚动卡片 */}
+            <div className="lg:col-span-7 flex flex-col gap-8">
+              {numbersData.map((item, idx) => (
+                <div key={idx} className={`number-card bg-${item.color} p-10 md:p-14 rounded-[2.5rem] shadow-sm`}>
+                  <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mb-8 backdrop-blur-md">
+                    <svg width="32" height="32" viewBox="0 0 66 66" fill="white">
+                      <path d={item.icon} />
+                    </svg>
+                  </div>
+                  <p className={`text-6xl md:text-7xl font-bold mb-4 ${item.color === 'morandi-yellow' ? 'text-slate-800' : 'text-white'}`}>
+                    {item.num}
+                  </p>
+                  <p className={`text-xl leading-relaxed ${item.color === 'morandi-yellow' ? 'text-slate-700' : 'text-white/90'}`}>
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================
+              精选文章 (Featured Articles)
+          ========================================================= */}
+        <section className="container mx-auto px-6 py-20 relative z-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {articlesData.map((article, idx) => (
+              <div key={idx} className="group cursor-pointer">
+                <div className="relative w-full aspect-[16/10] rounded-[2rem] overflow-hidden mb-6">
+                  <img
+                    src={article.img}
+                    alt={article.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute top-6 left-6 flex gap-2">
+                    {article.tags.map(tag => (
+                      <span key={tag} className="bg-white/90 backdrop-blur text-slate-800 text-xs font-medium px-4 py-2 rounded-full shadow-sm">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 group-hover:text-morandi-green transition-colors leading-snug pr-4">
+                  {article.title}
+                </h3>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* =========================================================
+              合作品牌 (Brands Marquee)
+          ========================================================= */}
+        <section className="py-24 overflow-hidden relative z-20 bg-background">
+          <div className="container mx-auto px-6 mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 text-center">Brands that choose MindMarket</h2>
+          </div>
+
+          {/* 第一排：向左滚动 */}
+          <div className="flex w-[200%] animate-marquee mb-8 gap-8 items-center">
+            {[...brandsRow1, ...brandsRow1].map((brand, idx) => (
+              <div key={idx} className="flex-shrink-0 w-[200px] flex items-center justify-center grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                <img src={brand.src} alt={brand.name} className="max-h-12 w-auto object-contain" />
+              </div>
+            ))}
+          </div>
+
+          {/* 第二排：向右滚动 */}
+          <div className="flex w-[200%] animate-marquee-reverse gap-8 items-center">
+            {[...brandsRow2, ...brandsRow2].map((brand, idx) => (
+              <div key={idx} className="flex-shrink-0 w-[200px] flex items-center justify-center grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                <img src={brand.src} alt={brand.name} className="max-h-12 w-auto object-contain" />
+              </div>
+            ))}
+          </div>
+        </section>
+        <Footer />
       </div>
     </div>
   );

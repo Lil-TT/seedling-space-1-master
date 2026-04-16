@@ -30,3 +30,29 @@
     visibility: hidden;
   }
 }
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 30s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  /* 向左滚动到 50% 处（由于我们复制了两份数据，宽度是 200%，所以刚好无缝衔接） */
+  100% { transform: translateX(-50%); } 
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  /* 向右滚动 */
+  100% { transform: translateX(0); }
+}
+
+/* 悬停时暂停动画（可选，增加用户体验） */
+.animate-marquee:hover, 
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}

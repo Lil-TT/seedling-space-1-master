@@ -127,3 +127,184 @@ export const assetConfigs = [
   { type: "svg", name: "timeline-end-green-middle", speed: -0.075, className: "z-20 max-md:transform-none!" },
   { type: "svg", name: "timeline-end-green-front", className: "z-30" },
 ];
+
+// ==========================================
+// 1. 数据里程碑 (Numbers Stack)
+// ==========================================
+export const numbersData = [
+  {
+    num: "55+",
+    desc: "Our network spans over 55 countries, giving you local insight with global consistency.",
+    color: "morandi-blue",
+    icon: "M15.5 32.995a17.495 17.495 0 1 1 34.99 0 17.495 17.495 0 0 1-34.99 0" // 地球简轴
+  },
+  {
+    num: "375",
+    desc: "We’ve successfully delivered more than 375 research projects around the world — and counting.",
+    color: "morandi-green",
+    icon: "M45.429 24.585c.365.375.571.883.571 1.412 0 .53-.206 1.037-.571 1.412L30.805 42.376a2.1 2.1 0 0 1-.675.462" // Check简轴
+  },
+  {
+    num: "40+",
+    desc: "From global brands to growing startups, more than 40 clients have partnered with us.",
+    color: "morandi-red",
+    icon: "M50 27.5c-.2-3.8-1.8-6.8-4.4-8.3s-6-1.4-9.4.3c-1 .5-2 1.2-2.9 1.9-.9-.7-1.9-1.4-2.9-1.9-3.4-1.7-6.7-1.8-9.4-.3-5.3 3.1-6 11.7-1.4 19.5" // Heart简轴
+  }
+];
+
+// ==========================================
+// 2. 精选文章 (Featured Articles)
+// ==========================================
+export const articlesData = [
+  {
+    title: "Cross-Border UX Research: Unifying Online Grocery Shopping Across Latin America",
+    tags: ["Latin America", "Case Studies"],
+    img: "https://www.datocms-assets.com/166003/1763462522-cross-border-ux-research-unifying-online-grocery-shopping-across-latin-america.webp"
+  },
+  {
+    title: "Understanding Consumer Behaviour in the Middle East: Key Insights for Global Companies",
+    tags: ["Middle East", "Customer Insights"],
+    img: "https://www.datocms-assets.com/166003/1763465294-middle-east-shopping.webp"
+  },
+  {
+    title: "Understanding East Asian Consumer Behaviour: A Guide for Global Brands",
+    tags: ["Asia-Pacific", "Customer Insights"],
+    img: "https://www.datocms-assets.com/166003/1763467710-asian.webp"
+  },
+  {
+    title: "Unlocking the Flavours of Egypt: A Journey into Seasoning Preferences",
+    tags: ["Middle East", "Case Studies"],
+    img: "https://www.datocms-assets.com/166003/1763464326-cairo2.webp"
+  }
+];
+
+// ==========================================
+// 3. 品牌 Logo (无限滚动带)
+// ==========================================
+export const brandsRow1 = [
+  { name: "Discord", src: "https://www.datocms-assets.com/166003/1755458576-discord-icon-1.svg" },
+  { name: "Paypal", src: "https://www.datocms-assets.com/166003/1758543241-logo-paypal.png" },
+  { name: "Walmart", src: "https://www.datocms-assets.com/166003/1758633618-logo-walmart.png" },
+  { name: "Moet", src: "https://www.datocms-assets.com/166003/1758633714-logo-moet-chandon.png" },
+  { name: "Coinbase", src: "https://www.datocms-assets.com/166003/1758633775-logo-coinbase.png" },
+  { name: "Airbnb", src: "https://www.datocms-assets.com/166003/1758633823-logo-airbnb.png" }
+];
+
+export const brandsRow2 = [
+  { name: "Apple", src: "https://www.datocms-assets.com/166003/1776187970-apple-logo.webp" },
+  { name: "Google", src: "https://www.datocms-assets.com/166003/1758542873-logo-google.png" },
+  { name: "Youtube", src: "https://www.datocms-assets.com/166003/1758633552-logo-youtube.png" },
+  { name: "Uber", src: "https://www.datocms-assets.com/166003/1758633638-logo-uber.png" },
+  { name: "Meta", src: "https://www.datocms-assets.com/166003/1758633737-logo-meta.png" }
+];
+
+// ==========================================
+// 童心市场 (MindMarket) - 心愿与闲置数据
+// ==========================================
+export const marketItems = [
+  {
+    id: 1,
+    title: "寻找一个能听懂雨声的音乐盒",
+    user: "林间小鹿",
+    avatar: "🦌",
+    tags: ["心愿", "音乐"],
+    color: "bg-morandi-blue",
+    height: "h-64", // 模拟瀑布流错落高度
+  },
+  {
+    id: 2,
+    title: "闲置出：一套几乎全新的水彩画具，希望能给喜欢画画的朋友。",
+    user: "色彩收集者",
+    avatar: "🎨",
+    tags: ["闲置", "美术"],
+    color: "bg-morandi-green",
+    height: "h-80",
+  },
+  {
+    id: 3,
+    title: "交换一本《小王子》立体书",
+    user: "星空旅人",
+    avatar: "⭐",
+    tags: ["交换", "书籍"],
+    color: "bg-morandi-yellow",
+    height: "h-56",
+  },
+  {
+    id: 4,
+    title: "手作羊毛毡小猫，换一点今天的开心故事。",
+    user: "手工课代表",
+    avatar: "🧶",
+    tags: ["手作", "情绪交换"],
+    color: "bg-morandi-red",
+    height: "h-72",
+  },
+  {
+    id: 5,
+    title: "求一个旧底片相机，型号不限",
+    user: "时光捕手",
+    avatar: "📷",
+    tags: ["心愿", "摄影"],
+    color: "bg-slate-200",
+    height: "h-60",
+  },
+  {
+    id: 6,
+    title: "分享几张我自己拍的极光明信片",
+    user: "追光者",
+    avatar: "🌌",
+    tags: ["分享", "信件"],
+    color: "bg-morandi-blue",
+    height: "h-80",
+  }
+];
+
+// ==========================================
+// 活动大厅 (Activities) - 任务数据
+// ==========================================
+export const activitiesData = [
+  {
+    id: 1,
+    title: "清晨的第一个微笑",
+    desc: "在童心市场分享你今天早上的开心瞬间，给陌生人带去一点正能量。",
+    reward: "+20 情绪币",
+    type: "日常互动",
+    status: "active",
+    color: "bg-morandi-yellow"
+  },
+  {
+    id: 2,
+    title: "参与社区技术复盘",
+    desc: "参加本周的内部线上复盘会，总结近期项目中遇到的渲染瓶颈与踩坑经验。",
+    reward: "+50 情绪币",
+    type: "核心共建",
+    status: "active",
+    color: "bg-morandi-blue"
+  },
+  {
+    id: 3,
+    title: "沉淀一份标准 SOP",
+    desc: "梳理 3D 资产导出规范或前端动画排坑指南，存入公共物料库以提升整体开发效率。",
+    reward: "+100 情绪币",
+    type: "高阶挑战",
+    status: "active",
+    color: "bg-morandi-green"
+  },
+  {
+    id: 4,
+    title: "树洞倾听者",
+    desc: "在成长生态中，为三个陌生人的烦恼树洞留下温暖的开导评论。",
+    reward: "+30 情绪币",
+    type: "日常互动",
+    status: "completed", // 已完成状态
+    color: "bg-slate-200"
+  },
+  {
+    id: 5,
+    title: "给未来写封信",
+    desc: "记录当下一闪而过的开发灵感或情绪片段，并设置在下个月随机拆开。",
+    reward: "+50 情绪币",
+    type: "特殊任务",
+    status: "active",
+    color: "bg-morandi-red"
+  }
+];
