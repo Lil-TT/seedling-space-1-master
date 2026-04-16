@@ -1,0 +1,110 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. 核心权限角色枚举
+enum Role {
+  STUDENT
+  PARENT
+  TEACHER
+  SUPER_ADMIN
+}
+
+// 2. 核心用户表 (兼容 NextAuth 登录规范)
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(STUDENT) // 默认注册为学生
+  
+  // 多态角色关联
+  studentProfile StudentProfile?
+  parentProfile  ParentProfile?
+  teacherProfile TeacherProfile?
+  
+  // NextAuth 必须关联的账号模型
+  accounts      Account[]
+  sessions      Session[]
+}
+
+// 3. 家长档案 (可以看到自己绑定的学生)
+model ParentProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // 一个家长可以绑定多个孩子
+  students  StudentProfile[] 
+}
+
+// 4. 老师档案 (可以管理班级/学生)
+model TeacherProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// 5. 学生档案 (树洞生态的核心数据源)
+model StudentProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // 被绑定的家长
+  parentId  String?
+  parent    ParentProfile? @relation(fields: [parentId], references: [id])
+  
+  // 学生的动态数据
+  confessions Confession[] // 心情树洞/倾诉记录
+  coins       Int          @default(0) // 活动大厅的情绪币
+}
+
+// 6. 心情树洞/倾诉记录表 (带隐私脱敏与熔断预警机制)
+model Confession {
+  id          String   @id @default(cuid())
+  content     String   // 倾诉原文
+  sentiment   Float    // 情绪值 (0-1)，用于触发超级管理员/老师的紧急阈值预警
+  visibility  Int      @default(0) // 0:仅自己可见 1:家长可见摘要 2:老师可见状态
+  createdAt   DateTime @default(now())
+  
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// NextAuth 认证框架基础表 (不要修改)
+// ==========================================
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
