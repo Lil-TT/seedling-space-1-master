@@ -1,62 +1,70 @@
 // lib/dashboard-data.ts
 
-// 四大核心卡片数据
+// 四大（六大）核心卡片数据
 export const coreCardsData = [
     {
-        title: "活动大厅",
-        description: "参与高年级活动与家庭共创，接取最新任务。",
-        bgColor: "morandi-blue",
-        textColor: "white",
-        link: "/activities",
+        title: "委托活动大厅",
+        description: "参与老师与家长发布的共创委托，揭榜接取任务赚取情绪币。",
+        bgColor: "rose-100", // 浪漫的淡玫瑰色
+        textColor: "rose-900",
+        href: "/activities", // 注意：这里使用了 href，确保与组件中的 <Link href={card.href}> 匹配
         linkText: "探索活动 →"
     },
     {
-        title: "童心市场",
-        description: "发布闲置物品，用你的铅笔与书本交换心愿。",
+        title: "童心流转市场",
+        description: "发布你的闲置物品与心愿，用铅笔、书本或情绪币交换惊喜。",
         bgColor: "morandi-yellow",
         textColor: "slate-800",
-        link: "/market",
+        href: "/market",
         linkText: "去逛逛 →"
     },
     {
-        title: "成长生态",
-        description: "在树洞倾诉心情，培育你的专属成长树。",
-        bgColor: "morandi-green",
-        textColor: "white",
-        link: "/growth",
-        linkText: "查看心情 →"
+        title: "3D 树洞与成长",
+        description: "倾诉你的小烦恼，用每一次的情绪波动培育千人千面的专属成长树。",
+        bgColor: "amber-100", // 温馨的淡琥珀色
+        textColor: "amber-900",
+        href: "/growth",
+        linkText: "查看成长树 →"
     },
     {
-        title: "成果展览馆",
-        description: "展示你的交易记录与成长勋章墙。",
-        bgColor: "morandi-red",
-        textColor: "white",
-        link: "/achievements",
-        linkText: "我的主页 →"
+        title: "个人数字工作台",
+        description: "查看你的资产余额、待处理的交易请求与老师发布的预警状态。",
+        bgColor: "morandi-yellow",
+        textColor: "slate-800",
+        href: "/profile",
+        linkText: "进入主页 →"
     },
     {
-        title: "成果展览馆",
-        description: "展示你的交易记录与成长勋章墙。",
-        bgColor: "morandi-red",
-        textColor: "white",
-        link: "/achievements",
-        linkText: "我的主页 →"
+        title: "秘密通讯基地",
+        description: "在由便利贴和作业本组成的专属私密空间，与小伙伴偷偷传纸条。",
+        bgColor: "amber-100", // 温馨的淡琥珀色
+        textColor: "amber-900",
+        href: "/profile", // 从主页的消息盒子进入具体私聊
+        linkText: "查收纸条 →"
     },
     {
-        title: "成果展览馆",
-        description: "展示你的交易记录与成长勋章墙。",
-        bgColor: "morandi-red",
-        textColor: "white",
-        link: "/achievements",
-        linkText: "我的主页 →"
+        title: "灵感闪念捕手",
+        description: "随时记录转瞬即逝的奇思妙想，让每一个灵感都化作情绪币的养分。",
+        bgColor: "rose-100", // 浪漫的淡玫瑰色
+        textColor: "rose-900",
+        href: "/growth",
+        linkText: "记录灵感 →"
+    },
+    {
+        title: "暂未开发的神秘空间",
+        description: "敬请期待更多惊喜功能上线，继续用童心探索未知的数字世界！",
+        bgColor: "rose-100", // 浪漫的淡玫瑰色
+        textColor: "rose-900",
+        href: "/growth",
+        linkText: "敬请期待 →"
     }
 ];
 
-// Callout 区域成果描述数据
+// Callout 区域成果描述数据 (深度本地化翻译)
 export const achievementsData = [
-    "Fast, high-quality insights",
-    "One seamless project lead",
-    "Built for multi-market studies"
+    "敏锐、充满温度的童心数据洞察", // 对应 "Fast, high-quality insights"
+    "无缝衔接的师生家校互动闭环",   // 对应 "One seamless project lead"
+    "专为多元化情绪生态构建的架构"  // 对应 "Built for multi-market studies"
 ];
 
 // lib/dashboard-data.ts
@@ -79,7 +87,7 @@ export const assetConfigs = [
   { type: "riv", name: "soccer", className: "absolute z-20 aspect-[1789/1438] max-md:top-[81%] max-md:right-[-5%] max-md:w-[100%] md:top-[63%] md:left-[-3.5%] md:w-[56.5%]" },
   { type: "riv", name: "binoculars", className: "absolute z-10 aspect-[1789/1438] max-md:right-[-16%] max-md:bottom-[2%] max-md:w-[73%] md:right-[-8.5%] md:bottom-[2%] md:w-[60%]" },
   { type: "riv", name: "unicycle", className: "absolute z-10 aspect-[1694/1594] max-md:bottom-[8%] max-md:left-[16%] max-md:w-[70%] md:bottom-[5%] md:left-[22%] md:w-[54%]" },
-  { type: "riv", name: "basketball_player", className: "absolute z-10 aspect-[1608/1608] max-md:bottom-[4%] max-md:left-[-15%] max-md:w-[58%] md:bottom-[10%] md:left-[-5%] md:w-[44%]" },
+  { type: "riv", name: "basketball_player", className: "absolute z-10 aspect-[1608/1608] max-md:bottom-[4%] max-md:left-[-15%] max-md:w-[58%] md:bottom-[4%] md:left-[-5%] md:w-[44%]" },
 
   // ==========================================
   // SVG 静态与视差资产 (.svg)
@@ -128,183 +136,67 @@ export const assetConfigs = [
   { type: "svg", name: "timeline-end-green-front", className: "z-30" },
 ];
 
-// ==========================================
-// 1. 数据里程碑 (Numbers Stack)
-// ==========================================
+// 2. 数据里程碑 (Numbers Stack)
 export const numbersData = [
-  {
-    num: "55+",
-    desc: "Our network spans over 55 countries, giving you local insight with global consistency.",
-    color: "morandi-blue",
-    icon: "M15.5 32.995a17.495 17.495 0 1 1 34.99 0 17.495 17.495 0 0 1-34.99 0" // 地球简轴
-  },
-  {
-    num: "375",
-    desc: "We’ve successfully delivered more than 375 research projects around the world — and counting.",
-    color: "morandi-green",
-    icon: "M45.429 24.585c.365.375.571.883.571 1.412 0 .53-.206 1.037-.571 1.412L30.805 42.376a2.1 2.1 0 0 1-.675.462" // Check简轴
-  },
-  {
-    num: "40+",
-    desc: "From global brands to growing startups, more than 40 clients have partnered with us.",
-    color: "morandi-red",
-    icon: "M50 27.5c-.2-3.8-1.8-6.8-4.4-8.3s-6-1.4-9.4.3c-1 .5-2 1.2-2.9 1.9-.9-.7-1.9-1.4-2.9-1.9-3.4-1.7-6.7-1.8-9.4-.3-5.3 3.1-6 11.7-1.4 19.5" // Heart简轴
-  }
+    {
+        num: "10,000+",
+        desc: "颗情绪币在孩子们手中流转，不仅是奖励，更是友善与互助的证明。",
+        color: "morandi-yellow",
+        // 心形/钱币的融合图标路径
+        icon: "M33 60C33 60 12 43.125 12 26.25C12 17.2664 19.2664 10 28.25 10C33.3934 10 38.0772 12.4042 41 16.1458C43.9228 12.4042 48.6066 10 53.75 10C62.7336 10 70 17.2664 70 26.25C70 43.125 49 60 49 60L41 66L33 60Z"
+    },
+    {
+        num: "5,000+",
+        desc: "棵专属 3D 成长树在这里生根发芽，记录下每一次微小的喜怒哀乐。",
+        color: "morandi-green",
+        // 树苗/叶子图标路径
+        icon: "M41 10C41 10 20 22 20 42C20 54 30 62 41 66C52 62 62 54 62 42C62 22 41 10 41 10ZM41 54C34 46 30 36 30 28C30 24 32 20 35 18C38 24 41 30 41 30C41 30 44 24 47 18C50 20 52 24 52 28C52 36 48 46 41 54Z"
+    },
+    {
+        num: "2,000+",
+        desc: "次心愿与闲置物品的成功交换，连接起跨越班级与年级的纯真友谊。",
+        color: "morandi-blue",
+        // 握手/交换的环形图标路径
+        icon: "M41 16C27.1929 16 16 27.1929 16 41C16 54.8071 27.1929 66 41 66C54.8071 66 66 54.8071 66 41C66 27.1929 54.8071 16 41 16ZM41 56C32.7157 56 26 49.2843 26 41C26 32.7157 32.7157 26 41 26C49.2843 26 56 32.7157 56 41C56 49.2843 49.2843 56 41 56ZM46 36L41 31L36 36H40V46H42V36H46Z"
+    }
 ];
 
-// ==========================================
-// 2. 精选文章 (Featured Articles)
-// ==========================================
+// 3. 精选文章与动态 (Featured Articles)
 export const articlesData = [
-  {
-    title: "Cross-Border UX Research: Unifying Online Grocery Shopping Across Latin America",
-    tags: ["Latin America", "Case Studies"],
-    img: "https://www.datocms-assets.com/166003/1763462522-cross-border-ux-research-unifying-online-grocery-shopping-across-latin-america.webp"
-  },
-  {
-    title: "Understanding Consumer Behaviour in the Middle East: Key Insights for Global Companies",
-    tags: ["Middle East", "Customer Insights"],
-    img: "https://www.datocms-assets.com/166003/1763465294-middle-east-shopping.webp"
-  },
-  {
-    title: "Understanding East Asian Consumer Behaviour: A Guide for Global Brands",
-    tags: ["Asia-Pacific", "Customer Insights"],
-    img: "https://www.datocms-assets.com/166003/1763467710-asian.webp"
-  },
-  {
-    title: "Unlocking the Flavours of Egypt: A Journey into Seasoning Preferences",
-    tags: ["Middle East", "Case Studies"],
-    img: "https://www.datocms-assets.com/166003/1763464326-cairo2.webp"
-  }
+    {
+        title: "如何将孩子的日常小烦恼，转化为成长的宝贵养分？",
+        tags: ["家长必读", "情绪引导"],
+        img: "https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+        title: "童心市场交易指南：教孩子认识第一堂『财商与分享课』",
+        tags: ["系统指南", "财商启蒙"],
+        img: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+        title: "高年级视角的成长悬赏：校园里的责任感是如何练成的",
+        tags: ["校园共创", "责任感"],
+        img: "https://picsum.photos/seed/school/800/500"
+    },
+    {
+        title: "3D 情绪树背后的技术与逻辑：让每一次点击都有温度",
+        tags: ["开发日志", "Web3D"],
+        img: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop"
+    }
 ];
 
-// ==========================================
-// 3. 品牌 Logo (无限滚动带)
-// ==========================================
+// 4. 共创伙伴/标签墙 (Brands Marquee) 
+// 这里使用高质感的教育/创意类文字 Logo 或图标 (你可以后续替换本地 SVG)
 export const brandsRow1 = [
-  { name: "Discord", src: "https://www.datocms-assets.com/166003/1755458576-discord-icon-1.svg" },
-  { name: "Paypal", src: "https://www.datocms-assets.com/166003/1758543241-logo-paypal.png" },
-  { name: "Walmart", src: "https://www.datocms-assets.com/166003/1758633618-logo-walmart.png" },
-  { name: "Moet", src: "https://www.datocms-assets.com/166003/1758633714-logo-moet-chandon.png" },
-  { name: "Coinbase", src: "https://www.datocms-assets.com/166003/1758633775-logo-coinbase.png" },
-  { name: "Airbnb", src: "https://www.datocms-assets.com/166003/1758633823-logo-airbnb.png" }
+    { name: "CreativeKids", src: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" },
+    { name: "EduSpace", src: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" },
+    { name: "GrowthMind", src: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" },
+    { name: "FutureStar", src: "https://upload.wikimedia.org/wikipedia/commons/2/26/Spotify_logo_with_text.svg" }
 ];
 
 export const brandsRow2 = [
-  { name: "Apple", src: "https://www.datocms-assets.com/166003/1776187970-apple-logo.webp" },
-  { name: "Google", src: "https://www.datocms-assets.com/166003/1758542873-logo-google.png" },
-  { name: "Youtube", src: "https://www.datocms-assets.com/166003/1758633552-logo-youtube.png" },
-  { name: "Uber", src: "https://www.datocms-assets.com/166003/1758633638-logo-uber.png" },
-  { name: "Meta", src: "https://www.datocms-assets.com/166003/1758633737-logo-meta.png" }
-];
-
-// ==========================================
-// 童心市场 (MindMarket) - 心愿与闲置数据
-// ==========================================
-export const marketItems = [
-  {
-    id: 1,
-    title: "寻找一个能听懂雨声的音乐盒",
-    user: "林间小鹿",
-    avatar: "🦌",
-    tags: ["心愿", "音乐"],
-    color: "bg-morandi-blue",
-    height: "h-64", // 模拟瀑布流错落高度
-  },
-  {
-    id: 2,
-    title: "闲置出：一套几乎全新的水彩画具，希望能给喜欢画画的朋友。",
-    user: "色彩收集者",
-    avatar: "🎨",
-    tags: ["闲置", "美术"],
-    color: "bg-morandi-green",
-    height: "h-80",
-  },
-  {
-    id: 3,
-    title: "交换一本《小王子》立体书",
-    user: "星空旅人",
-    avatar: "⭐",
-    tags: ["交换", "书籍"],
-    color: "bg-morandi-yellow",
-    height: "h-56",
-  },
-  {
-    id: 4,
-    title: "手作羊毛毡小猫，换一点今天的开心故事。",
-    user: "手工课代表",
-    avatar: "🧶",
-    tags: ["手作", "情绪交换"],
-    color: "bg-morandi-red",
-    height: "h-72",
-  },
-  {
-    id: 5,
-    title: "求一个旧底片相机，型号不限",
-    user: "时光捕手",
-    avatar: "📷",
-    tags: ["心愿", "摄影"],
-    color: "bg-slate-200",
-    height: "h-60",
-  },
-  {
-    id: 6,
-    title: "分享几张我自己拍的极光明信片",
-    user: "追光者",
-    avatar: "🌌",
-    tags: ["分享", "信件"],
-    color: "bg-morandi-blue",
-    height: "h-80",
-  }
-];
-
-// ==========================================
-// 活动大厅 (Activities) - 任务数据
-// ==========================================
-export const activitiesData = [
-  {
-    id: 1,
-    title: "清晨的第一个微笑",
-    desc: "在童心市场分享你今天早上的开心瞬间，给陌生人带去一点正能量。",
-    reward: "+20 情绪币",
-    type: "日常互动",
-    status: "active",
-    color: "bg-morandi-yellow"
-  },
-  {
-    id: 2,
-    title: "参与社区技术复盘",
-    desc: "参加本周的内部线上复盘会，总结近期项目中遇到的渲染瓶颈与踩坑经验。",
-    reward: "+50 情绪币",
-    type: "核心共建",
-    status: "active",
-    color: "bg-morandi-blue"
-  },
-  {
-    id: 3,
-    title: "沉淀一份标准 SOP",
-    desc: "梳理 3D 资产导出规范或前端动画排坑指南，存入公共物料库以提升整体开发效率。",
-    reward: "+100 情绪币",
-    type: "高阶挑战",
-    status: "active",
-    color: "bg-morandi-green"
-  },
-  {
-    id: 4,
-    title: "树洞倾听者",
-    desc: "在成长生态中，为三个陌生人的烦恼树洞留下温暖的开导评论。",
-    reward: "+30 情绪币",
-    type: "日常互动",
-    status: "completed", // 已完成状态
-    color: "bg-slate-200"
-  },
-  {
-    id: 5,
-    title: "给未来写封信",
-    desc: "记录当下一闪而过的开发灵感或情绪片段，并设置在下个月随机拆开。",
-    reward: "+50 情绪币",
-    type: "特殊任务",
-    status: "active",
-    color: "bg-morandi-red"
-  }
+    { name: "MindMarket", src: "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" },
+    { name: "HeartSync", src: "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg" },
+    { name: "PlayLearn", src: "https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png" },
+    { name: "KidsPro", src: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" }
 ];

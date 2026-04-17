@@ -28,6 +28,14 @@ enum MarketStatus {
   REJECTED   // 审核驳回
 }
 
+// 新增：交易状态枚举
+enum TradeStatus {
+  PENDING    // 待回应
+  ACCEPTED   // 已接受（可进入留言板交流环节）
+  REJECTED   // 已婉拒
+  COMPLETED  // 交易完成
+}
+
 // ==========================================
 // 3. 核心用户与角色映射体系
 // ==========================================
@@ -98,10 +106,16 @@ model StudentProfile {
   lastTroubleAt DateTime?
 
   // 业务数据关联
-  confessions      Confession[]      // 倾诉烦恼记录
-  inspirations     Inspiration[]     // 灵感记录 (高度私密)
-  marketItems      MarketItem[]      // 在童心市场发布的物品
-  participations   TaskParticipant[] // 参与的活动任务
+  confessions    Confession[]      // 倾诉烦恼记录
+  inspirations   Inspiration[]     // 灵感记录 (高度私密)
+  marketItems    MarketItem[]      // 在童心市场发布的物品
+  participations TaskParticipant[] // 参与的活动任务
+  
+  // 新增：交易关联
+  initiatedTrades Trade[]          @relation("InitiatedTrades") // 我发起的交换
+  receivedTrades  Trade[]          @relation("ReceivedTrades")  // 我收到的交换请求
+
+  messages    TradeMessage[]
 }
 
 // ==========================================
@@ -132,6 +146,21 @@ model Inspiration {
 // ==========================================
 // 5. 童心市场 (Mind Market)
 // ==========================================
+// 秘密通讯仪的“纸条”记录
+model TradeMessage {
+  id          String   @id @default(cuid())
+  content     String   @db.Text
+  createdAt   DateTime @default(now())
+
+  // 这张纸条属于哪次交易协商
+  tradeId     String
+  trade       Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+
+  // 是谁写的纸条
+  senderId    String
+  sender      StudentProfile @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
 // 市场发布的物品或心愿
 model MarketItem {
   id          String       @id @default(cuid())
@@ -147,16 +176,27 @@ model MarketItem {
   trades      Trade[]      // 关联的交易协商记录
 }
 
-// 交易协商空间 (类似私聊/协议室)
+// 交易协商空间 (核心重构)
 model Trade {
-  id          String     @id @default(cuid())
-  itemId      String
-  buyerId     String     // 想交换的另一个学生的 ID
-  status      String     @default("NEGOTIATING") // NEGOTIATING, AGREED, CANCELLED
-  createdAt   DateTime   @default(now())
+  id          String      @id @default(cuid())
   
-  marketItem  MarketItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  // 注意：这里后续还可以扩展 Message 模型用于存放两人的聊天记录
+  // 关联的市场物品
+  itemId      String
+  item        MarketItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  // 发起方 (想换东西的人)
+  initiatorId String
+  initiator   StudentProfile @relation("InitiatedTrades", fields: [initiatorId], references: [id], onDelete: Cascade)
+
+  // 接收方 (物品的所有者)
+  receiverId  String
+  receiver    StudentProfile @relation("ReceivedTrades", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  status      TradeStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  messages    TradeMessage[]
 }
 
 // ==========================================

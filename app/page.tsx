@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import Lenis from "lenis";
 import RivePlayer from "@rive-app/react-canvas";
 import Footer from "@/components/layout/Footer";
+import Link from "next/link";
 
 import { coreCardsData, achievementsData, assetConfigs, numbersData, articlesData, brandsRow1, brandsRow2 } from "@/lib/dashboard-data";
 
@@ -59,7 +60,9 @@ export default function Dashboard() {
         }
       });
 
-      // 3. SVG 路径滚动追踪动画
+      // ====================================================
+      // 3. SVG 路径滚动追踪动画 (聚焦感改造)
+      // ====================================================
       if (pathRef.current) {
         const pathLength = pathRef.current.getTotalLength();
         gsap.set(pathRef.current, {
@@ -67,13 +70,16 @@ export default function Dashboard() {
           strokeDashoffset: pathLength,
         });
 
+        // 【改造核心】：将 start 和 end 设为 center，
+        // 这样画线的进度(0% -> 100%) 会和 SVG 容器经过屏幕中心(50vh)的物理距离绝对绑定。
+        // 画线的“头”就会死死咬住屏幕正中央！
         gsap.to(pathRef.current, {
           strokeDashoffset: 0,
           ease: "none",
           scrollTrigger: {
-            trigger: ".scrolling-content",
-            start: "top 10%", // 调整画线时机
-            end: "bottom bottom",
+            trigger: ".svg-path",
+            start: "top center",
+            end: "bottom center",
             scrub: true,
           },
         });
@@ -89,8 +95,11 @@ export default function Dashboard() {
         delay: 2.2
       });
 
-      // 5. 大圆角卡片交错入场 (单独监听每个卡片，完美适配超长滚动)
+      // ====================================================
+      // 5. 大圆角卡片交错入场 
+      // ====================================================
       gsap.utils.toArray<HTMLElement>(".dashboard-card").forEach((card) => {
+        // 卡片入场动画
         gsap.from(card, {
           y: 150,
           scale: 0.95,
@@ -98,9 +107,23 @@ export default function Dashboard() {
           duration: 1.2,
           ease: "power2.out",
           scrollTrigger: {
-            trigger: card, // 将每个卡片自己作为触发器
-            start: "top 85%", // 当卡片顶部到达屏幕 85% 处时开始浮现
+            trigger: card,
+            start: "top 85%",
           },
+        });
+
+        // ====================================================
+        // 5.5 SVG 激活态联动 (卡片靠近屏幕中心时，线条发光/变色)
+        // ====================================================
+        ScrollTrigger.create({
+          trigger: card,
+          start: "top center", // 卡片碰到屏幕中心
+          end: "bottom center", // 卡片离开屏幕中心
+          // 产生呼吸发光感：变白并加粗
+          onEnter: () => gsap.to(pathRef.current, { stroke: "#4199eb", strokeWidth: 500, duration: 0.4, ease: "power2.out" }),
+          onLeave: () => gsap.to(pathRef.current, { stroke: "#8ED462", strokeWidth: 450, duration: 0.4, ease: "power2.out" }),
+          onEnterBack: () => gsap.to(pathRef.current, { stroke: "#4199eb", strokeWidth: 500, duration: 0.4, ease: "power2.out" }),
+          onLeaveBack: () => gsap.to(pathRef.current, { stroke: "#8ED462", strokeWidth: 450, duration: 0.4, ease: "power2.out" }),
         });
       });
 
@@ -156,10 +179,10 @@ export default function Dashboard() {
         {/* 文字容器 (包裹在 hero-text-container 中由 GSAP 缩放) */}
         <div className="hero-text-container relative z-0 text-center mt-[-10vh]">
           <h1 className="hero-text text-[15vw] md:text-[11vw] font-bold tracking-tighter text-slate-900 leading-[0.85] mb-6">
-            Real human<br />insights
+            让情绪看得见
           </h1>
-          <h2 className="hero-text text-2xl md:text-[3vw] text-slate-800 font-medium">
-            One global partner
+          <h2 className="hero-text text-2xl md:text-[3vw] text-slate-800 font-medium tracking-widest mt-4">
+            — 童心流转与成长空间 —
           </h2>
         </div>
       </section>
@@ -168,7 +191,7 @@ export default function Dashboard() {
           前景顶层 (z-10)：随着鼠标滚动滑上来的所有内容
           包含 Rive人物、绿色底座、卡片、SVG线条等
       ========================================================= */}
-      <div className="scrolling-content relative z-10 w-full mt-[-35vh] pb-32 pointer-events-none ">
+      <div className="scrolling-content relative z-10 w-full mt-[-35vh] pointer-events-none ">
 
         {/* --- 顶部插画：绿色波浪底座 + Rive人物 --- */}
         {/* 这里使用负的 margin-top 使得初始状态下，人物的头部能在第一屏底部露出来 */}
@@ -181,23 +204,28 @@ export default function Dashboard() {
 
         {/* --- 下方的米色内容延续区 --- */}
         <div className="relative w-full bg-background pt-[20vh] pointer-events-auto shadow-[0_-30px_50px_rgba(245,245,243,1)] rounded-t-3xl">
-
           {/* SVG 背景追踪线条 */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] md:w-[100%] h-full z-[1] pointer-events-none svg-path">
+          <div className="absolute top-0 left-0 w-full h-full z-[1] pointer-events-none svg-path">
             <svg
-              className="w-full h-auto will-change-[transform]"
-              viewBox="0 0 1378 2760"
+              className="w-full h-full will-change-[transform]"
+              viewBox="0 0 1400 6000"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              preserveAspectRatio="xMidYMin meet"
+              preserveAspectRatio="none"
             >
               <path
                 ref={pathRef}
-                d="M639.668 100C639.668 100 105.669 100 199.669 601.503C293.669 1103.01 1277.17 691.502 1277.17 1399.5C1277.17 2107.5 -155.332 1968 140.168 1438.5C435.669 909.002 1442.66 2093.5 713.168 2659.5"
+                /* 这条重写的路径呈现 S 型不断向下蜿蜒：
+                  M700 0 (从顶部中心开始)
+                  C ... 200 1000 (向左弯曲，对应奇数卡片)
+                  C ... 1200 2000 (向右弯曲，对应偶数卡片)
+                  以此类推，最后回到中心点 700 6000
+                */
+                d="M700 0 C700 400 200 600 200 1000 C200 1400 1200 1600 1200 2000 C1200 2400 200 2600 200 3000 C200 3400 1200 3600 1200 4000 C1200 4400 200 4600 200 5000 C200 5400 700 5600 700 6000"
                 stroke="#8ED462"
-                strokeWidth="450"
+                strokeWidth="24"
                 strokeLinecap="round"
-                className="opacity-90"
+                className="opacity-80"
               />
             </svg>
           </div>
@@ -213,11 +241,14 @@ export default function Dashboard() {
               {coreCardsData.map((card, index) => (
                 <div
                   key={index}
-                  // 奇数靠左，偶数靠右，卡片宽度限制在 70%，制造出错落有致的布局
-                  className={`dashboard-card bg-${card.bgColor} p-12 rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer w-full md:w-[70%] aspect-square md:aspect-[16/10] flex flex-col justify-between ${index % 2 === 0 ? 'self-start' : 'self-end'
+                  // 【改造核心】：移除了实色背景，加入了高斯模糊、半透明白底、微光边框的玻璃态体系
+                  className={`dashboard-card bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] hover:bg-white/20 hover:shadow-[0_16px_48px_0_rgba(0,0,0,0.15)] transition-all duration-500 cursor-pointer w-full md:w-[70%] aspect-square md:aspect-[16/10] flex flex-col justify-between p-12 rounded-[2.5rem] relative overflow-hidden ${index % 2 === 0 ? 'self-start' : 'self-end'
                     }`}
                 >
-                  <div>
+                  {/* 可选：在玻璃内部加一层微妙的渐变光晕增加体积感 */}
+                  <div className="absolute -top-32 -left-32 w-64 h-64 bg-white/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                  <div className="relative z-10">
                     <h2 className={`text-4xl md:text-5xl font-bold text-${card.textColor} mb-4 tracking-tight`}>
                       {card.title}
                     </h2>
@@ -225,9 +256,14 @@ export default function Dashboard() {
                       {card.description}
                     </p>
                   </div>
-                  <div className={`self-end ${card.textColor === 'white' ? 'bg-white/20' : 'bg-slate-800/10'} px-6 py-4 rounded-full backdrop-blur-md hover:bg-white/30 transition-colors`}>
-                    <span className={`text-${card.textColor} font-medium`}>{card.linkText}</span>
-                  </div>
+                  
+                  {/* 【改造核心】：替换为真实的 Next.js Link 路由 */}
+                  <Link 
+                    href={card.href || "#"} // 确保你的 dashboard-data 里面有配置 href 字段
+                    className={`relative z-10 self-end ${card.textColor === 'white' ? 'bg-white/20' : 'bg-slate-800/10'} px-6 py-4 rounded-full backdrop-blur-md hover:scale-105 hover:bg-white/40 transition-all duration-300`}
+                  >
+                    <span className={`text-${card.textColor} font-medium tracking-wide`}>{card.linkText}</span>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -288,20 +324,20 @@ export default function Dashboard() {
               数据里程碑 (Numbers Stack) - Sticky 交互
           ========================================================= */}
         {/* 里程碑模块，加上 number-card 类名供 GSAP 抓取 */}
-        <section className="container mx-auto px-6 py-32 relative z-20 bg-background pointer-events-auto">
+        <section className="mx-auto px-6 py-32 relative z-20 bg-background pointer-events-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             {/* 左侧：固定不动的文字区域 (确保父级相对定位且无高度限制) */}
             <div className="lg:col-span-5 relative h-full">
               <div className="sticky top-[30vh]">
                 <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
-                  A few numbers behind the <strong className="text-morandi-red">insights</strong> we deliver
+                  见证每一次成长的 <strong className="text-morandi-red">数字里程碑</strong>
                 </h2>
-                <p className="text-lg text-slate-600 max-w-md">
-                  These numbers are more than just milestones. They represent the strength of our connections, the consistency of our work, and the real-world impact we help create for you.
+                <p className="text-lg text-slate-600 max-w-md font-medium leading-relaxed">
+                  这些不仅仅是数字，它们代表了孩子们倾诉的每一次烦恼、完成的每一次委托、以及在童心世界里传递的每一份温暖与价值。
                 </p>
               </div>
             </div>
-            
+
             {/* 右侧：滚动卡片 */}
             <div className="lg:col-span-7 flex flex-col gap-8">
               {numbersData.map((item, idx) => (
@@ -326,7 +362,7 @@ export default function Dashboard() {
         {/* =========================================================
               精选文章 (Featured Articles)
           ========================================================= */}
-        <section className="container mx-auto px-6 py-20 relative z-20">
+        <section className="mx-auto px-6 py-20 relative z-20" style={{ backgroundColor: "#f7f7dd" }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {articlesData.map((article, idx) => (
               <div key={idx} className="group cursor-pointer">
@@ -357,7 +393,9 @@ export default function Dashboard() {
           ========================================================= */}
         <section className="py-24 overflow-hidden relative z-20 bg-background">
           <div className="container mx-auto px-6 mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 text-center">Brands that choose MindMarket</h2>
+            <h2 className="text-3xl font-bold text-slate-900 text-center tracking-wide">
+              共同守护童心世界的共创伙伴
+            </h2>
           </div>
 
           {/* 第一排：向左滚动 */}
