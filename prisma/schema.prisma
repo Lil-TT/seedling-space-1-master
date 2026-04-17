@@ -1,5 +1,6 @@
-// prisma/schema.prisma
-
+// ==========================================
+// 1. 基础配置 (兼容 Prisma 5.x 与 Neon)
+// ==========================================
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,7 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 1. 核心权限角色枚举
+// ==========================================
+// 2. 枚举定义 (Enums)
+// ==========================================
 enum Role {
   STUDENT
   PARENT
@@ -17,63 +20,109 @@ enum Role {
   SUPER_ADMIN
 }
 
-// 2. 核心用户表 (兼容 NextAuth 登录规范)
+enum MarketStatus {
+  PENDING    // 待老师审核
+  APPROVED   // 审核通过，市场展示中
+  TRADING    // 正在交易协商中
+  COMPLETED  // 交易完成
+  REJECTED   // 审核驳回
+}
+
+// ==========================================
+// 3. 核心用户与角色映射体系
+// ==========================================
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  password      String?
   emailVerified DateTime?
   image         String?
-  role          Role      @default(STUDENT) // 默认注册为学生
+  role          Role      @default(STUDENT) // 默认角色
   
-  // 多态角色关联
+  // 角色档案的一对一映射
   studentProfile StudentProfile?
   parentProfile  ParentProfile?
   teacherProfile TeacherProfile?
   
-  // NextAuth 必须关联的账号模型
+  // NextAuth 认证体系关联
   accounts      Account[]
   sessions      Session[]
 }
 
-// 3. 家长档案 (可以看到自己绑定的学生)
-model ParentProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+// 班级表：实现师生多对多，学生一对多关联
+model Class {
+  id        String           @id @default(cuid())
+  name      String           @unique // 如: "2026级3班"
   
-  // 一个家长可以绑定多个孩子
-  students  StudentProfile[] 
+  teachers  TeacherProfile[] // 一个班级可以有多个管理老师
+  students  StudentProfile[] // 一个班级有多个学生
 }
 
-// 4. 老师档案 (可以管理班级/学生)
+// 老师档案
 model TeacherProfile {
   id        String   @id @default(cuid())
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  classes   Class[]  // 老师管理的班级列表
 }
 
-// 5. 学生档案 (树洞生态的核心数据源)
+// 家长档案
+model ParentProfile {
+  id        String           @id @default(cuid())
+  userId    String           @unique
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  students  StudentProfile[] // 家长绑定的孩子列表
+}
+
+// 学生档案 (核心业务枢纽)
 model StudentProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // 被绑定的家长
-  parentId  String?
-  parent    ParentProfile? @relation(fields: [parentId], references: [id])
-  
-  // 学生的动态数据
-  confessions Confession[] // 心情树洞/倾诉记录
-  coins       Int          @default(0) // 活动大厅的情绪币
+  // 归属关系
+  classId       String?
+  class         Class?    @relation(fields: [classId], references: [id])
+  parentId      String?
+  parent        ParentProfile? @relation(fields: [parentId], references: [id])
+
+  // 成长生态 (Growth Tree) 业务字段
+  coins         Int       @default(0)    // 情绪币余额
+  seed          Float     @default(0.5)  // 3D 树木渲染随机种子（保证千人千树）
+  leafCount     Int       @default(0)    // 树叶数量 (开心灌溉产生)
+  lastWateredAt DateTime?                // 上次灌溉时间 (用于每日一次限制)
+  troubleCount  Int       @default(0)    // 倾诉烦恼连续点击次数 (用于危机预警)
+  lastTroubleAt DateTime?
+
+  // 业务数据关联
+  confessions      Confession[]      // 倾诉烦恼记录
+  inspirations     Inspiration[]     // 灵感记录 (高度私密)
+  marketItems      MarketItem[]      // 在童心市场发布的物品
+  participations   TaskParticipant[] // 参与的活动任务
 }
 
-// 6. 心情树洞/倾诉记录表 (带隐私脱敏与熔断预警机制)
+// ==========================================
+// 4. 成长生态 (Growth Ecosystem)
+// ==========================================
+// 倾诉烦恼记录 (触发预警机制)
 model Confession {
   id          String   @id @default(cuid())
   content     String   // 倾诉原文
-  sentiment   Float    // 情绪值 (0-1)，用于触发超级管理员/老师的紧急阈值预警
-  visibility  Int      @default(0) // 0:仅自己可见 1:家长可见摘要 2:老师可见状态
+  sentiment   Float    // 情绪值 (0-1)，自动评估用于预警
+  visibility  Int      @default(0) // 0:仅自己可见 1:家长摘要可见 2:老师状态可见
+  createdAt   DateTime @default(now())
+  
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// 灵感记录 (绝对私密)
+model Inspiration {
+  id          String   @id @default(cuid())
+  content     String   // 灵感瞬间的记录
   createdAt   DateTime @default(now())
   
   studentId   String
@@ -81,7 +130,64 @@ model Confession {
 }
 
 // ==========================================
-// NextAuth 认证框架基础表 (不要修改)
+// 5. 童心市场 (Mind Market)
+// ==========================================
+// 市场发布的物品或心愿
+model MarketItem {
+  id          String       @id @default(cuid())
+  title       String
+  desc        String       @db.Text
+  type        String       // "WISH" (心愿) 或 "IDLE" (闲置)
+  status      MarketStatus @default(PENDING) // 初始需老师审核
+  createdAt   DateTime     @default(now())
+  
+  ownerId     String       // 发布者(学生)
+  owner       StudentProfile @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  trades      Trade[]      // 关联的交易协商记录
+}
+
+// 交易协商空间 (类似私聊/协议室)
+model Trade {
+  id          String     @id @default(cuid())
+  itemId      String
+  buyerId     String     // 想交换的另一个学生的 ID
+  status      String     @default("NEGOTIATING") // NEGOTIATING, AGREED, CANCELLED
+  createdAt   DateTime   @default(now())
+  
+  marketItem  MarketItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  // 注意：这里后续还可以扩展 Message 模型用于存放两人的聊天记录
+}
+
+// ==========================================
+// 6. 活动大厅 (Activities)
+// ==========================================
+// 发布的任务活动
+model Activity {
+  id          String            @id @default(cuid())
+  title       String
+  desc        String?           @db.Text
+  reward      Int               // 情绪币奖励金额
+  initiatorId String            // 发起人 ID (老师、家长或高年级学生)
+  status      String            @default("OPEN") // OPEN, REVIEWING, FINISHED
+  createdAt   DateTime          @default(now())
+  
+  participants TaskParticipant[] // 接取该任务的学生列表
+}
+
+// 任务接取记录映射表
+model TaskParticipant {
+  id          String         @id @default(cuid())
+  studentId   String
+  activityId  String
+  status      String         @default("ACCEPTED") // ACCEPTED, SUBMITTED(待结算), COMPLETED(已结算)
+  
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  activity    Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// 7. NextAuth 必须的认证底层表 (请勿修改)
 // ==========================================
 model Account {
   id                 String  @id @default(cuid())
