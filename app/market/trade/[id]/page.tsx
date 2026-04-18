@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef, use } from "react";
 import { useSession } from "next-auth/react";
+import gsap from "gsap";
 
 interface Message {
     id: string;
@@ -20,6 +21,7 @@ export default function SecretChatRoom({ params }: { params: Promise<{ id: strin
     const [newMessage, setNewMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [isCompleted, setIsCompleted] = useState(false);
 
     // 获取当前登录学生的 Profile ID (需通过 Session 间接获取或在后续比对)
     // 这里我们为了简单比对身份，直接用名字比对（严格来说应该在 API 里把 session user ID 映射好返回）
@@ -29,6 +31,25 @@ export default function SecretChatRoom({ params }: { params: Promise<{ id: strin
         fetch(`/api/market/trade/${id}/messages`)
             .then(res => res.json())
             .then(data => setMessages(Array.isArray(data) ? data : []));
+    };
+
+    // 新增：处理击掌完成
+    const handleHighFive = async () => {
+        // 简单的 GSAP 震动特效，模拟击掌的力度
+        gsap.to(".secret-base-container", {
+            x: () => gsap.utils.random(-10, 10),
+            y: () => gsap.utils.random(-10, 10),
+            duration: 0.1,
+            yoyo: true,
+            repeat: 5,
+            onComplete: () => gsap.set(".secret-base-container", { x: 0, y: 0 })
+        });
+
+        const res = await fetch(`/api/market/trade/${id}/complete`, { method: "POST" });
+        if (res.ok) {
+            alert("👏 击掌成功！本次流转圆满完成！");
+            setIsCompleted(true);
+        }
     };
 
     useEffect(() => {
@@ -69,15 +90,30 @@ export default function SecretChatRoom({ params }: { params: Promise<{ id: strin
 
             <div className="container mx-auto max-w-3xl px-4 relative z-10">
 
-                {/* 秘密基地头部 */}
-                <div className="bg-amber-100 border-4 border-amber-900 rounded-[2rem] p-6 mb-6 shadow-[8px_8px_0_rgba(120,53,15,0.2)] flex justify-between items-center transform -rotate-1">
+                {/* =================================================
+            秘密基地头部：新增“击掌”按钮
+        ================================================= */}
+                <div className="bg-amber-100 border-4 border-amber-900 rounded-[2rem] p-6 mb-6 shadow-[8px_8px_0_rgba(120,53,15,0.2)] flex flex-col md:flex-row justify-between items-center transform -rotate-1 gap-4">
                     <div>
                         <h1 className="text-2xl font-black text-amber-900 tracking-wider">🏕️ 秘密交换基地</h1>
-                        <p className="text-amber-800/70 font-bold text-sm mt-1">嘘... 这里只有你们两个人知道</p>
+                        <p className="text-amber-800/70 font-bold text-sm mt-1">
+                            {isCompleted ? "本次流转已圆满完成 🎉" : "线下见面换完东西后，记得点击击掌哦！"}
+                        </p>
                     </div>
-                    <button onClick={() => window.history.back()} className="px-4 py-2 bg-white border-2 border-amber-900 rounded-xl font-bold text-amber-900 hover:bg-amber-50 active:scale-95 transition-transform shadow-[4px_4px_0_rgba(120,53,15,1)]">
-                        返回
-                    </button>
+
+                    <div className="flex gap-3">
+                        {!isCompleted && (
+                            <button
+                                onClick={handleHighFive}
+                                className="px-4 py-2 bg-emerald-500 border-2 border-emerald-900 rounded-xl font-black text-white hover:bg-emerald-400 active:scale-95 transition-transform shadow-[4px_4px_0_rgba(4,120,87,1)] flex items-center gap-2"
+                            >
+                                <span className="text-xl">👏</span> 线下已交换
+                            </button>
+                        )}
+                        <button onClick={() => window.history.back()} className="px-4 py-2 bg-white border-2 border-amber-900 rounded-xl font-bold text-amber-900 hover:bg-amber-50 active:scale-95 transition-transform shadow-[4px_4px_0_rgba(120,53,15,1)]">
+                            返回
+                        </button>
+                    </div>
                 </div>
 
                 {/* 聊天记录区：模拟横格作业本 */}
