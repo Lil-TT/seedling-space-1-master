@@ -27,12 +27,20 @@ export default async function ProfilePage() {
     let allActiveTrades: any[] = [];
     let submittedTasks: any[] = [];
     let parentData: any = null; 
+    let myBadges: any[] = [];
 
     // ==========================================
     // 1. 学生逻辑
     // ==========================================
     if (user.role === "STUDENT") {
         roleDisplayName = "学生";
+
+        myBadges = await prisma.userBadge.findMany({
+            where: { userId: user.id },
+            include: { badge: true },
+            orderBy: { unlockedAt: 'desc' }
+        });
+
         studentData = await prisma.studentProfile.upsert({
             where: { userId: user.id },
             update: {},
@@ -122,7 +130,7 @@ export default async function ProfilePage() {
             <div className="container mx-auto px-6 max-w-5xl relative z-10">
 
                 {/* 1. 头部个人信息名片：增加 z-20 确保在背景墙上层 */}
-                <div className="relative z-20 bg-white rounded-[2rem] p-10 shadow-sm mb-8 flex flex-col md:flex-row items-center md:items-start justify-between gap-6 relative border-4 border-slate-900/5 hover:border-slate-900/10 transition-colors">
+                <div className="relative z-50 bg-white rounded-[2rem] p-10 shadow-sm mb-8 flex flex-col md:flex-row items-center md:items-start justify-between gap-6 border-4 border-slate-900/5 hover:border-slate-900/10 transition-colors">
                     <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-morandi-green/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
                     </div>
@@ -221,6 +229,50 @@ export default async function ProfilePage() {
                 )}
 
                 {/* 👇 👉 [学生端专属内容区]：所有内部模块增加 z-10 确保在背景墙上层渲染 */}
+                {/* 🌟 游戏化引擎：成就徽章墙 */}
+                {user.role === "STUDENT" && (
+                    <div className="relative z-10 mt-10 bg-[#f8fafc] rounded-[3rem] p-8 md:p-12 border-4 border-slate-900 shadow-[8px_8px_0_rgba(15,23,42,1)]">
+                        <h2 className="text-3xl font-black text-slate-900 mb-8 flex items-center gap-3">
+                            <span className="text-4xl drop-shadow-md">🏅</span> 我的成就徽章
+                        </h2>
+                        
+                        {myBadges.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-10 border-4 border-dashed border-slate-300 rounded-3xl bg-white">
+                                <span className="text-5xl grayscale opacity-50 mb-4">🏆</span>
+                                <p className="text-slate-500 font-bold">还没有解锁徽章哦，快去完成交易或记录灵感吧！</p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-wrap gap-6">
+                                {myBadges.map((ub) => (
+                                    <div key={ub.id} className="group relative flex flex-col items-center justify-center w-32 h-36 bg-amber-100 rounded-[2rem] border-4 border-slate-900 shadow-[4px_4px_0_rgba(15,23,42,1)] hover:-translate-y-2 hover:shadow-[8px_8px_0_rgba(15,23,42,1)] hover:bg-amber-200 transition-all cursor-pointer">
+                                        
+                                        {/* 闪光特效 */}
+                                        <div className="absolute -top-2 -right-2 text-xl opacity-0 group-hover:opacity-100 group-hover:animate-spin transition-opacity">✨</div>
+                                        
+                                        {/* 徽章图标 (可以是 emoji 也可以是图片路径) */}
+                                        <div className="w-16 h-16 bg-white rounded-full border-4 border-slate-900 flex items-center justify-center text-3xl shadow-inner mb-2 group-hover:scale-110 transition-transform">
+                                            {ub.badge.iconUrl.includes('/') ? (
+                                                <img src={ub.badge.iconUrl} alt="badge" className="w-10 h-10 object-contain" />
+                                            ) : (
+                                                <span>{ub.badge.iconUrl}</span>
+                                            )}
+                                        </div>
+                                        
+                                        <p className="font-black text-slate-900 text-xs text-center px-1 leading-tight">
+                                            {ub.badge.name}
+                                        </p>
+                                        
+                                        {/* 悬浮显示的描述气泡 */}
+                                        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-max max-w-[200px] bg-slate-900 text-white text-[10px] font-bold px-3 py-2 rounded-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+                                            {ub.badge.description}
+                                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 rotate-45"></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
                 
                 {/* 學生面板 1：正在进行的交换 */}
                 {user.role === "STUDENT" && allActiveTrades.length > 0 && (

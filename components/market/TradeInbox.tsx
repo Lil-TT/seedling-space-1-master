@@ -72,7 +72,7 @@ export default function TradeInbox() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-4 w-80 bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border-4 border-slate-800 p-5 z-[100]">
+        <div className="absolute right-0 mt-4 w-80 bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border-4 border-slate-800 p-5 z-[9999]">
           <h3 className="font-black text-slate-800 mb-4 px-2 flex items-center gap-2">
             <span>📩</span> 收到的交换请求
           </h3>

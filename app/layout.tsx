@@ -5,6 +5,7 @@ import Preloader from "@/components/animations/Preloader";
 import Navbar from "@/components/layout/Navbar";
 import SessionProvider from "@/components/providers/SessionProvider";
 import StudentGlobalBackground from "@/components/layout/StudentGlobalBackground";
+import GlobalMarquee from "@/components/layout/GlobalMarquee";
 
 
 export const metadata: Metadata = {
@@ -22,6 +23,8 @@ export default function RootLayout({
       <body className="bg-background text-slate-800 antialiased overflow-x-hidden min-h-screen">
         <SessionProvider>
           <StudentGlobalBackground />
+
+          <GlobalMarquee />
           {/* 全局加载动画 */}
           <Preloader />
 

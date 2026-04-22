@@ -13,17 +13,24 @@ export default function MarketWrapper({
 }) {
   const [isPlanetView, setIsPlanetView] = useState(false);
 
+  // 处理 3D 卫星点击降落
+  const handlePlanetItemSelect = (itemId: string) => {
+    setIsPlanetView(false); // 1. 返回地面
+
+    // 2. 延迟 600ms (等待模糊淡出动画结束) 后派发事件
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("market-item-select", { detail: itemId }));
+    }, 600);
+  };
+
   return (
     <>
-      {/* 遥控器始终悬浮在最上方 */}
       <MarketRemote isPlanetView={isPlanetView} onToggle={() => setIsPlanetView(!isPlanetView)} />
 
-      {/* 3D 星球视图 (点击后显示) */}
       <div className={`fixed inset-0 z-40 transition-opacity duration-1000 ${isPlanetView ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-        {isPlanetView && <ChildhoodPlanet items={items} />}
+        {isPlanetView && <ChildhoodPlanet items={items} onSelectItem={handlePlanetItemSelect} />}
       </div>
 
-      {/* 传统的瀑布流列表视图 (默认显示) */}
       <div className={`transition-all duration-700 ${isPlanetView ? "scale-90 opacity-0 blur-md pointer-events-none" : "scale-100 opacity-100"}`}>
         {children}
       </div>

@@ -17,7 +17,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-[100] px-6 py-4">
+    <nav className="fixed top-8 left-0 w-full z-[100] px-6 py-4">
       <div className="container mx-auto flex items-center justify-between bg-white/70 backdrop-blur-md border border-white/20 px-8 py-3 rounded-full shadow-sm">
         
         {/* Logo 与真实感校牌部分 */}
