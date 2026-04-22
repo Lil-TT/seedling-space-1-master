@@ -4,6 +4,8 @@ import "./globals.css";
 import Preloader from "@/components/animations/Preloader";
 import Navbar from "@/components/layout/Navbar";
 import SessionProvider from "@/components/providers/SessionProvider";
+import StudentGlobalBackground from "@/components/layout/StudentGlobalBackground";
+
 
 export const metadata: Metadata = {
   title: "MindMarket | 童心市场与成长生态",
@@ -19,7 +21,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className="bg-background text-slate-800 antialiased overflow-x-hidden min-h-screen">
         <SessionProvider>
-
+          <StudentGlobalBackground />
           {/* 全局加载动画 */}
           <Preloader />
 

@@ -104,11 +104,11 @@ export default function Dashboard() {
           y: 150,
           scale: 0.95,
           opacity: 0,
-          duration: 1.2,
+          duration: 0.2,
           ease: "power2.out",
           scrollTrigger: {
             trigger: card,
-            start: "top 85%",
+            start: "top 75%",
           },
         });
 

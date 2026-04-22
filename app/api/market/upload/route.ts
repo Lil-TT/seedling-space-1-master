@@ -11,13 +11,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "权限不足，仅学生可发布物品" }, { status: 403 });
     }
 
-    const { title, desc, type } = await req.json();
+    // 接收前端新增的 selectedIcon 字段
+    const { title, desc, type, selectedIcon } = await req.json();
 
     if (!title || !desc || !type) {
       return NextResponse.json({ error: "请填写完整的心愿信息" }, { status: 400 });
     }
 
-    // 找到当前学生的档案 ID
     const student = await prisma.studentProfile.findUnique({
       where: { userId: session.user.id }
     });
@@ -26,14 +26,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "未找到学生档案" }, { status: 404 });
     }
 
-    // 创建市场物品，初始状态为 PENDING
+    // 创建市场物品
     await prisma.marketItem.create({
       data: {
         title,
-        desc,
-        type, // 'WISH' 或 'IDLE'
+        desc, // 如果你想把图标名字偷偷存在 desc 里也可以，但最好是用专门的字段
+        type, 
         status: "PENDING",
-        ownerId: student.id
+        ownerId: student.id,
+        // 如果你在数据库里加了 iconName，就解除下面的注释：
+        iconName: selectedIcon ? `/market-icons/${selectedIcon}.png` : null
       }
     });
 

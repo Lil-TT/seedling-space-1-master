@@ -18,7 +18,7 @@ export default function ActivitiesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F5F5F3] pt-24 pb-12">
+    <div className="min-h-screen pt-24 pb-12">
       <div className="container mx-auto px-6 max-w-6xl">
         
         {/* 页面头部 */}

@@ -20,10 +20,21 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 w-full z-[100] px-6 py-4">
       <div className="container mx-auto flex items-center justify-between bg-white/70 backdrop-blur-md border border-white/20 px-8 py-3 rounded-full shadow-sm">
         
-        {/* Logo 部分 */}
-        <Link href="/" className="text-xl font-bold tracking-tighter text-slate-900 hover:opacity-70 transition-opacity">
-          SEEDLING<span className="text-morandi-green">.</span>
-        </Link>
+        {/* Logo 与真实感校牌部分 */}
+        <div className="flex items-center gap-4">
+          <Link href="/" className="text-xl font-black tracking-tighter text-slate-900 hover:opacity-70 transition-opacity">
+            SEEDLING<span className="text-morandi-green">.</span>
+          </Link>
+          
+          {/* 🎓 新增：拟真校牌标签 (制造落地感) */}
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-100/80 rounded-full border border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors">
+            <span className="text-sm">🏫</span>
+            <span className="text-[11px] font-black text-slate-600 tracking-wide">光明小学 · 2026届3班</span>
+            <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </div>
 
         {/* 中间菜单 */}
         <div className="hidden md:flex items-center gap-8">

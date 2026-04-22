@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ApprovalDrawer from "./ApprovalDrawer";
 import ActivityPublishModal from "@/components/activities/ActivityPublishModal";
-
 interface StudentInfo {
   id: string;
   name: string;
@@ -222,7 +221,6 @@ export default function TeacherDashboard({
           </div>
         )}
       </div>
-
     </div>
   );
 }

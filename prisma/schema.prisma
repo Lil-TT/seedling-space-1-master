@@ -56,6 +56,10 @@ model User {
   // NextAuth 认证体系关联
   accounts      Account[]
   sessions      Session[]
+
+  driftBottles DriftBottle[]
+  echos        Echo[]
+  badges       UserBadge[]
 }
 
 // 班级表：实现师生多对多，学生一对多关联
@@ -138,6 +142,11 @@ model Inspiration {
   id          String   @id @default(cuid())
   content     String   // 灵感瞬间的记录
   createdAt   DateTime @default(now())
+
+  // [新增] 情绪量化分数：-10(极度悲伤) 到 10(极度开心)
+  emotionScore Int      @default(0)
+  // [新增] 情绪标签，例如 ["开心", "成就感"]，Postgres 支持 String[] 数组
+  emotionTags  String[] 
   
   studentId   String
   student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -167,6 +176,7 @@ model MarketItem {
   title       String
   desc        String       @db.Text
   type        String       // "WISH" (心愿) 或 "IDLE" (闲置)
+  iconName    String?
   status      MarketStatus @default(PENDING) // 初始需老师审核
   createdAt   DateTime     @default(now())
   
@@ -253,4 +263,64 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// 2. 匿名漂流瓶与回声系统（新增模型）
+// ==========================================
+// 漂流瓶本体
+model DriftBottle {
+  id          String   @id @default(cuid())
+  content     String   // 倾诉的烦恼或小秘密
+  isAnonymous Boolean  @default(true) // 是否匿名
+  
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade) // 添加级联删除
+  
+  echos       Echo[]   // 收到的回声（安慰）
+  createdAt   DateTime @default(now())
+}
+
+// 漂流瓶的回声（安慰反馈）
+model Echo {
+  id          String      @id @default(cuid())
+  content     String      // 安慰的话语或一个纯粹的“抱抱”表情
+  costCoins   Int         @default(1) // 给予安慰消耗的情绪币
+  
+  senderId    String
+  sender      User        @relation(fields: [senderId], references: [id], onDelete: Cascade) // 添加级联删除
+  
+  bottleId    String
+  bottle      DriftBottle @relation(fields: [bottleId], references: [id], onDelete: Cascade) // 添加级联删除
+  
+  createdAt   DateTime    @default(now())
+}
+
+// ==========================================
+// 3. 成就徽章墙系统（新增模型）
+// ==========================================
+// 徽章字典（系统预设的徽章，如图标资源映射）
+model Badge {
+  id          String      @id @default(cuid())
+  name        String      // 例如："交易小达人", "情绪小树苗"
+  description String
+  iconUrl     String      // 映射到你的前端矢量图标库路径
+  condition   String      // 解锁条件标识，方便后端做校验逻辑
+  
+  users       UserBadge[]
+}
+
+// 用户与徽章的关联（解锁记录）
+model UserBadge {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade) // 添加级联删除
+  
+  badgeId     String
+  badge       Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade) // 添加级联删除
+  
+  unlockedAt  DateTime @default(now())
+
+  // 确保一个用户不会重复解锁同一个徽章
+  @@unique([userId, badgeId]) 
 }
