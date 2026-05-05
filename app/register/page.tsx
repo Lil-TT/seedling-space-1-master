@@ -18,7 +18,8 @@ export default function RegisterPage() {
     role: "STUDENT",
     classId: "",
     classIds: [] as string[],
-    childEmail: ""
+    childEmail: "",
+    gradeLevel: ""
   });
 
   // 获取班级数据
@@ -94,13 +95,23 @@ export default function RegisterPage() {
 
           {/* 角色特定逻辑 */}
           {formData.role === 'STUDENT' && (
-            <select 
-              required className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 ring-morandi-green"
-              onChange={e => setFormData({...formData, classId: e.target.value})}
-            >
-              <option value="">选择你的班级</option>
-              {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            <>
+              <select 
+                required className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 ring-morandi-green"
+                onChange={e => setFormData({...formData, classId: e.target.value})}
+              >
+                <option value="">选择你的班级</option>
+                {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              <input
+                type="number"
+                min={1}
+                max={12}
+                placeholder="年级（1-12，用于活动匹配，可选）"
+                className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 ring-morandi-green"
+                onChange={e => setFormData({ ...formData, gradeLevel: e.target.value })}
+              />
+            </>
           )}
 
           {formData.role === 'TEACHER' && (

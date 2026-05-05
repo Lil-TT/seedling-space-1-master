@@ -60,6 +60,11 @@ model User {
   driftBottles DriftBottle[]
   echos        Echo[]
   badges       UserBadge[]
+
+  teacherCommentsLeft  TeacherComment[]         @relation("TeacherComments")
+  parentThreads        ParentTeacherThread[]    @relation("ParentSideThreads")
+  teacherMsgThreads    ParentTeacherThread[]    @relation("TeacherSideThreads")
+  ptMessagesSent       ParentTeacherMessage[]
 }
 
 // 班级表：实现师生多对多，学生一对多关联
@@ -69,6 +74,7 @@ model Class {
   
   teachers  TeacherProfile[] // 一个班级可以有多个管理老师
   students  StudentProfile[] // 一个班级有多个学生
+  targetedActivities Activity[] @relation("ActivityTargetClass")
 }
 
 // 老师档案
@@ -109,6 +115,10 @@ model StudentProfile {
   troubleCount  Int       @default(0)    // 倾诉烦恼连续点击次数 (用于危机预警)
   lastTroubleAt DateTime?
 
+  gradeLevel   Int?      // 1-12 年级，用于活动定向 / 高年级发任务
+  moodStreak   Int       @default(0)     // 连续心情打卡天数
+  lastPuzzleRewardDate String?         // YYYY-MM-DD 拼图每日奖励
+
   // 业务数据关联
   confessions    Confession[]      // 倾诉烦恼记录
   inspirations   Inspiration[]     // 灵感记录 (高度私密)
@@ -120,6 +130,11 @@ model StudentProfile {
   receivedTrades  Trade[]          @relation("ReceivedTrades")  // 我收到的交换请求
 
   messages    TradeMessage[]
+
+  moodCheckIns     MoodCheckIn[]
+  redemptions      Redemption[]
+  teacherComments  TeacherComment[]
+  threadContexts   ParentTeacherThread[] @relation("ThreadStudent")
 }
 
 // ==========================================
@@ -218,11 +233,100 @@ model Activity {
   title       String
   desc        String?           @db.Text
   reward      Int               // 情绪币奖励金额
-  initiatorId String            // 发起人 ID (老师、家长或高年级学生)
+  initiatorId String            // 发起人 User.id (老师、家长或高年级学生)
   status      String            @default("OPEN") // OPEN, REVIEWING, FINISHED
   createdAt   DateTime          @default(now())
+
+  kind             String   @default("GENERAL") // GENERAL | PARENT_CHILD
+  targetClassId    String?
+  minGrade         Int?
+  maxGrade         Int?
+
+  targetClass   Class?   @relation("ActivityTargetClass", fields: [targetClassId], references: [id])
   
   participants TaskParticipant[] // 接取该任务的学生列表
+}
+
+// 老师给学生的鼓励评语（家长可读）
+model TeacherComment {
+  id              String   @id @default(cuid())
+  content         String   @db.Text
+  createdAt       DateTime @default(now())
+  visibleToParent Boolean  @default(true)
+
+  teacherUserId String
+  teacher       User   @relation("TeacherComments", fields: [teacherUserId], references: [id], onDelete: Cascade)
+
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// 每日心情打卡（用于连续天数与树木形态）
+model MoodCheckIn {
+  id        String   @id @default(cuid())
+  dateKey   String   // YYYY-MM-DD (UTC)
+  moodKey   String   // great | good | ok | low | sad
+  createdAt DateTime @default(now())
+
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, dateKey])
+}
+
+// 情绪币兑换商品
+model RedeemableItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  costCoins   Int
+  stock       Int?     // null = 不限库存
+  active      Boolean  @default(true)
+  iconEmoji   String   @default("🎁")
+
+  redemptions Redemption[]
+}
+
+model Redemption {
+  id         String   @id @default(cuid())
+  coinsSpent Int
+  createdAt  DateTime @default(now())
+
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  itemId String
+  item   RedeemableItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+// 家长 ↔ 老师沟通线程
+model ParentTeacherThread {
+  id            String   @id @default(cuid())
+  updatedAt     DateTime @updatedAt
+
+  parentUserId  String
+  teacherUserId String
+  studentId     String?
+
+  parentUser  User @relation("ParentSideThreads", fields: [parentUserId], references: [id], onDelete: Cascade)
+  teacherUser User @relation("TeacherSideThreads", fields: [teacherUserId], references: [id], onDelete: Cascade)
+  student     StudentProfile? @relation("ThreadStudent", fields: [studentId], references: [id], onDelete: SetNull)
+
+  messages ParentTeacherMessage[]
+
+  @@unique([parentUserId, teacherUserId])
+}
+
+model ParentTeacherMessage {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  threadId String
+  thread   ParentTeacherThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  senderUserId String
+  sender       User @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
 }
 
 // 任务接取记录映射表

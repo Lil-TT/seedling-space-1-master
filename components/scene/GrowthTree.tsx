@@ -29,10 +29,12 @@ export interface GrowthTreeHandle {
 interface GrowthTreeProps {
   leafCount: number;  // 数据库里真实的树叶数量
   treeSeed: number;   // 数据库里真实的随机种子
+  /** 心情连续打卡驱动的形态阶段 0–3，树冠与树干略变化 */
+  growthStage?: number;
   onCrisisTrigger?: () => void; 
 }
 
-export const GrowthTree = forwardRef<GrowthTreeHandle, GrowthTreeProps>(({ leafCount, treeSeed, onCrisisTrigger }, ref) => {
+export const GrowthTree = forwardRef<GrowthTreeHandle, GrowthTreeProps>(({ leafCount, treeSeed, growthStage = 0, onCrisisTrigger }, ref) => {
   const treeRef = useRef<THREE.Group>(null);
   const foliageRef = useRef<THREE.Group>(null);
   const fragileLeafRef = useRef<THREE.Mesh>(null);
@@ -41,6 +43,10 @@ export const GrowthTree = forwardRef<GrowthTreeHandle, GrowthTreeProps>(({ leafC
   // ==========================================
   // 2. 球面坐标系算法：计算树叶的 3D 空间坐标
   // ==========================================
+  const stage = Math.min(3, Math.max(0, growthStage || 0));
+  const crownBoost = 1 + stage * 0.07;
+  const trunkBoost = 1 + stage * 0.08;
+
   const leaves = useMemo(() => {
     // 使用数据库里的 seed 初始化随机生成器
     const random = seededRandom(treeSeed || 0.12345);
@@ -53,7 +59,7 @@ export const GrowthTree = forwardRef<GrowthTreeHandle, GrowthTreeProps>(({ leafC
        const phi = Math.acos(2 * random() - 1); // 垂直角度
        
        // 树冠的半径基准设为 1.4，加上一点点随机扰动让边缘不那么圆滑
-       const radius = 1.4 + random() * 0.3; 
+       const radius = (1.4 + random() * 0.3) * crownBoost; 
 
        // 将球面坐标转换为笛卡尔 3D 坐标 (X, Y, Z)
        const x = radius * Math.sin(phi) * Math.cos(theta);
@@ -67,7 +73,7 @@ export const GrowthTree = forwardRef<GrowthTreeHandle, GrowthTreeProps>(({ leafC
        });
     }
     return leafData;
-  }, [leafCount, treeSeed]); // 只要叶子数量增加，就会自动计算出下一片叶子的固定位置
+  }, [leafCount, treeSeed, crownBoost]); // 只要叶子数量增加，就会自动计算出下一片叶子的固定位置
 
   // ... 之前的 useImperativeHandle 动画逻辑保持不变 ...
   useImperativeHandle(ref, () => ({
@@ -116,16 +122,16 @@ export const GrowthTree = forwardRef<GrowthTreeHandle, GrowthTreeProps>(({ leafC
   return (
     <group ref={treeRef} dispose={null} position={[0, -1.2, 0]}>
       {/* 树干 */}
-      <Cylinder args={[0.15, 0.35, 2.5, 7]} position={[0, 1.25, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color="#8B7E74" roughness={0.9} flatShading />
+      <Cylinder args={[0.15 * trunkBoost, 0.35 * trunkBoost, 2.5 * trunkBoost, 7]} position={[0, 1.25 * trunkBoost, 0]} castShadow receiveShadow>
+        <meshStandardMaterial color={stage >= 2 ? "#7a6a5e" : "#8B7E74"} roughness={0.9} flatShading />
       </Cylinder>
       
       {/* 树冠组 */}
-      <group ref={foliageRef} position={[0, 2.8, 0]}>
+      <group ref={foliageRef} position={[0, 2.8 + stage * 0.12, 0]}>
         
         {/* 底层核心网格 (遮挡空白) */}
-        <Icosahedron args={[1.2, 0]} castShadow receiveShadow>
-          <meshStandardMaterial color="#84A087" roughness={0.8} flatShading />
+        <Icosahedron args={[1.2 * crownBoost, 0]} castShadow receiveShadow>
+          <meshStandardMaterial color={stage >= 3 ? "#6f9b78" : "#84A087"} roughness={0.8} flatShading />
         </Icosahedron>
 
         {/* 3. 动态渲染生成的叶子群 */}
@@ -141,7 +147,13 @@ export const GrowthTree = forwardRef<GrowthTreeHandle, GrowthTreeProps>(({ leafC
           >
             {/* 用不同的绿色色阶来增加层次感 */}
             <meshStandardMaterial 
-               color={index % 3 === 0 ? "#A5BAAA" : index % 2 === 0 ? "#9BB7D4" : "#84A087"} 
+               color={
+                 stage >= 3
+                   ? index % 3 === 0 ? "#8fd4a4" : index % 2 === 0 ? "#7eb89a" : "#6f9b78"
+                   : stage >= 1
+                     ? index % 3 === 0 ? "#9bc4a8" : index % 2 === 0 ? "#8fb8c8" : "#739880"
+                     : index % 3 === 0 ? "#A5BAAA" : index % 2 === 0 ? "#9BB7D4" : "#84A087"
+               }
                roughness={0.8} 
                flatShading 
             />

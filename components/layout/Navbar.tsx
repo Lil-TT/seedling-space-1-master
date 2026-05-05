@@ -14,6 +14,8 @@ export default function Navbar() {
     { name: "成长生态", href: "/growth" },
     { name: "童心市场", href: "/market" },
     { name: "活动大厅", href: "/activities" },
+    { name: "情绪兑换", href: "/redeem" },
+    { name: "拼图", href: "/puzzle" },
   ];
 
   return (

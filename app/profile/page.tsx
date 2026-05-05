@@ -10,6 +10,7 @@ import StudentTaskList from "@/components/activities/StudentTaskList";
 import Link from "next/link";
 import ParentEmotionChart from "@/components/dashboard/ParentEmotionChart";
 import TeacherEmotionRadar from "@/components/dashboard/TeacherEmotionRadar";
+import ParentTeacherInbox from "@/components/messages/ParentTeacherInbox";
 
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions);
@@ -108,7 +109,13 @@ export default async function ProfilePage() {
                     include: { 
                         user: true,
                         marketItems: { orderBy: { createdAt: 'desc' }, take: 3 }, 
-                        participations: { include: { activity: true }, orderBy: { id: 'desc' }, take: 3 } 
+                        participations: { include: { activity: true }, orderBy: { id: 'desc' }, take: 3 },
+                        teacherComments: {
+                            where: { visibleToParent: true },
+                            orderBy: { createdAt: 'desc' },
+                            take: 12,
+                            include: { teacher: { select: { name: true } } },
+                        },
                     }
                 }
             }
@@ -173,6 +180,7 @@ export default async function ProfilePage() {
                     <div className="space-y-10 relative z-10">
                         <TeacherEmotionRadar />
                         <TeacherDashboard students={allStudents} pendingMarketCount={pendingMarketCount} submittedTasks={submittedTasks} />
+                        <ParentTeacherInbox role="TEACHER" />
                     </div>
                 )}
 
@@ -184,6 +192,8 @@ export default async function ProfilePage() {
                         </h2>
                         
                         <ParentEmotionChart />
+
+                        <ParentTeacherInbox role="PARENT" />
 
                         {parentData.students.map((child: any) => (
                             <div key={child.id} className="bg-white rounded-[2rem] p-8 shadow-sm border-4 border-slate-100">
@@ -215,14 +225,37 @@ export default async function ProfilePage() {
                                         <h4 className="font-black text-emerald-900 mb-4 text-base flex items-center gap-2"><span>⚔️</span> 最近参与的悬赏</h4>
                                         {child.participations.length === 0 ? <p className="text-sm text-emerald-900/50 font-bold">暂未接取任务</p> : 
                                             child.participations.map((p: any) => (
-                                                <div key={p.id} className="flex justify-between items-center bg-white px-4 py-3 rounded-xl mb-3 shadow-sm border-2 border-emerald-100">
-                                                    <p className="text-sm font-bold text-emerald-900 truncate max-w-[60%]">《{p.activity.title}》</p>
-                                                    <span className="text-[10px] font-black px-2 py-1 bg-emerald-100 rounded-md text-emerald-800 border border-emerald-200">{p.status}</span>
+                                                <div key={p.id} className="flex justify-between items-center gap-2 bg-white px-4 py-3 rounded-xl mb-3 shadow-sm border-2 border-emerald-100">
+                                                    <p className="text-sm font-bold text-emerald-900 truncate flex-1 min-w-0">《{p.activity.title}》</p>
+                                                    <div className="flex items-center gap-2 shrink-0">
+                                                        {p.activity?.kind === "PARENT_CHILD" && (
+                                                            <span className="text-[10px] font-black text-rose-700 px-2 py-0.5 rounded-md bg-rose-50 border border-rose-100">亲子</span>
+                                                        )}
+                                                        <span className="text-[10px] font-black px-2 py-1 bg-emerald-100 rounded-md text-emerald-800 border border-emerald-200">{p.status}</span>
+                                                    </div>
                                                 </div>
                                             ))
                                         }
                                     </div>
                                 </div>
+
+                                {child.teacherComments?.length > 0 && (
+                                    <div className="mt-6 bg-indigo-50 rounded-3xl border-4 border-indigo-100 p-6">
+                                        <h4 className="font-black text-indigo-950 mb-4 flex items-center gap-2">
+                                            <span>💌</span> 老师寄语
+                                        </h4>
+                                        <ul className="space-y-3">
+                                            {child.teacherComments.map((c: any) => (
+                                                <li key={c.id} className="bg-white rounded-2xl px-4 py-3 border-2 border-indigo-100 shadow-sm">
+                                                    <p className="text-slate-800 font-medium leading-relaxed">{c.content}</p>
+                                                    <p className="text-[10px] text-slate-400 mt-2 font-bold">
+                                                        {(c.teacher?.name || "老师")} · {new Date(c.createdAt).toLocaleString()}
+                                                    </p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

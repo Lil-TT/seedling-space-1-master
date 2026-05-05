@@ -10,6 +10,10 @@ interface Activity {
   desc: string;
   reward: number;
   participants: any[];
+  kind?: string;
+  minGrade?: number | null;
+  maxGrade?: number | null;
+  targetClass?: { id: string; name: string } | null;
 }
 
 const gradients = [
@@ -130,7 +134,24 @@ export default function ActivitySlider({ items }: { items: Activity[] }) {
         {displayItems.map((item, i) => (
           <li key={item._key} ref={el => { itemRefs.current[i] = el; }} className="absolute flex justify-center items-center w-full h-full will-change-transform">
             <div className={`w-[250px] h-[250px] rounded-[2.5rem] bg-gradient-to-br ${gradients[i % gradients.length]} shadow-[0_20px_40px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center border-4 border-white/60 cursor-pointer overflow-hidden group relative`}>
-              <div className="absolute top-4 right-4 px-3 py-1 bg-white/80 backdrop-blur-md rounded-full font-black text-amber-600 text-sm flex items-center gap-1 shadow-sm">
+              <div className="absolute top-4 left-4 right-4 flex flex-wrap gap-1 justify-end items-start">
+                {item.kind === "PARENT_CHILD" && (
+                  <span className="px-2 py-0.5 bg-rose-100 text-rose-800 rounded-full text-[10px] font-black border border-rose-200">
+                    亲子
+                  </span>
+                )}
+                {(item.minGrade != null || item.maxGrade != null) && (
+                  <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-full text-[10px] font-black border border-indigo-200">
+                    年级 {item.minGrade ?? "—"}–{item.maxGrade ?? "—"}
+                  </span>
+                )}
+                {item.targetClass && (
+                  <span className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-full text-[10px] font-black border border-slate-200 truncate max-w-[120px]">
+                    {item.targetClass.name}
+                  </span>
+                )}
+              </div>
+              <div className="absolute top-14 right-4 px-3 py-1 bg-white/80 backdrop-blur-md rounded-full font-black text-amber-600 text-sm flex items-center gap-1 shadow-sm">
                 <span>🪙</span> {item.reward}
               </div>
               <span className="text-7xl group-hover:scale-110 transition-transform duration-500 drop-shadow-xl">

@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, password, name, role, classId, classIds, childEmail } = body;
+    const { email, password, name, role, classId, classIds, childEmail, gradeLevel } = body;
 
     if (!email || !password || !role) {
       return NextResponse.json({ error: "必填项缺失" }, { status: 400 });
@@ -36,11 +36,17 @@ export async function POST(req: Request) {
 
       // 根据角色处理档案
       if (role === "STUDENT") {
+        const gl =
+          gradeLevel === undefined || gradeLevel === null || gradeLevel === ""
+            ? null
+            : Number(gradeLevel);
         await tx.studentProfile.create({
           data: {
             userId: user.id,
             classId: classId || null,
             seed: Math.random(),
+            gradeLevel:
+              gl != null && !isNaN(gl) ? Math.min(12, Math.max(1, gl)) : null,
           }
         });
       } 

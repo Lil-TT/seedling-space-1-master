@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ApprovalDrawer from "./ApprovalDrawer";
 import ActivityPublishModal from "@/components/activities/ActivityPublishModal";
+import TeacherCommentPanel from "@/components/profile/TeacherCommentPanel";
 interface StudentInfo {
   id: string;
   name: string;
@@ -124,6 +125,7 @@ export default function TeacherDashboard({
       <ActivityPublishModal
         isOpen={isPublishModalOpen}
         onClose={() => setIsPublishModalOpen(false)}
+        onRefresh={() => router.refresh()}
       />
 
       {/* 老师工作台新增：待核发赏金 */}
@@ -221,6 +223,10 @@ export default function TeacherDashboard({
           </div>
         )}
       </div>
+
+      <TeacherCommentPanel
+        students={students.map((s) => ({ id: s.id, name: s.name }))}
+      />
     </div>
   );
 }

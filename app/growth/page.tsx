@@ -16,7 +16,13 @@ export default function GrowthEcosystem() {
 
   // === 基础状态 ===
   // 新增了 coins 字段用于前端展示余额和扣款
-  const [growthData, setGrowthData] = useState({ leafCount: 0, seed: 0.5, coins: 0 });
+  const [growthData, setGrowthData] = useState({
+    leafCount: 0,
+    seed: 0.5,
+    coins: 0,
+    moodStreak: 0,
+    growthStage: 0,
+  });
   
   // === 灵感记录状态 ===
   const [isInspireModalOpen, setIsInspireModalOpen] = useState(false);
@@ -36,8 +42,13 @@ export default function GrowthEcosystem() {
       .then(res => res.json())
       .then(data => {
         if (data.leafCount !== undefined) {
-          // 假设后端一并返回了当前的情绪币余额 coins
-          setGrowthData({ leafCount: data.leafCount, seed: data.seed, coins: data.coins || 0 });
+          setGrowthData({
+            leafCount: data.leafCount,
+            seed: data.seed,
+            coins: data.coins ?? 0,
+            moodStreak: data.moodStreak ?? 0,
+            growthStage: data.growthStage ?? 0,
+          });
         }
       });
   }, []);
@@ -48,7 +59,11 @@ export default function GrowthEcosystem() {
     const data = await res.json();
     if (res.ok) {
       if (treeComponentRef.current) treeComponentRef.current.waterTree();
-      setGrowthData(prev => ({ ...prev, leafCount: data.leafCount }));
+      setGrowthData((prev) => ({
+        ...prev,
+        leafCount: data.leafCount,
+        coins: data.coins ?? prev.coins,
+      }));
     } else {
       alert(data.error);
     }
@@ -93,6 +108,29 @@ export default function GrowthEcosystem() {
 
   const handleCrisisAlert = () => {
     alert("树叶承载不住你的烦恼掉落了... 我们已经悄悄通知了关心你的老师，深呼吸，一切都会好起来的。");
+  };
+
+  const handleMoodCheckIn = async (moodKey: string) => {
+    try {
+      const res = await fetch("/api/growth/mood-checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ moodKey }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setGrowthData((prev) => ({
+          ...prev,
+          moodStreak: data.moodStreak ?? prev.moodStreak,
+          growthStage: data.growthStage ?? prev.growthStage,
+        }));
+        alert(data.message || "打卡成功");
+      } else {
+        alert(data.error || "打卡失败");
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   // ==========================================
@@ -197,8 +235,13 @@ export default function GrowthEcosystem() {
           </div>
           <div className="flex items-center gap-4">
             {/* 显示当前的情绪币余额 */}
-            <div className="px-4 py-2 rounded-full bg-yellow-100 border-2 border-yellow-400 text-yellow-700 font-bold shadow-sm">
-              🤑 {growthData.coins}
+            <div className="flex flex-wrap gap-2 justify-end">
+              <div className="px-4 py-2 rounded-full bg-violet-100 border-2 border-violet-300 text-violet-800 font-bold shadow-sm text-sm">
+                心情连续 {growthData.moodStreak} 天 · 树形态 Lv.{growthData.growthStage}
+              </div>
+              <div className="px-4 py-2 rounded-full bg-yellow-100 border-2 border-yellow-400 text-yellow-700 font-bold shadow-sm">
+                🤑 {growthData.coins}
+              </div>
             </div>
             <Link href="/" className="px-6 py-2 rounded-full bg-white shadow-sm border border-slate-100 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-800">
               返回首页
@@ -208,6 +251,23 @@ export default function GrowthEcosystem() {
 
         {/* 底部心情互动卡片 */}
         <div className="flex flex-wrap gap-4 md:gap-6 pointer-events-auto mb-8 items-center">
+          {[
+            { key: "great", emoji: "🌈", label: "超棒" },
+            { key: "good", emoji: "🙂", label: "不错" },
+            { key: "ok", emoji: "😐", label: "还行" },
+            { key: "low", emoji: "🌧️", label: "有点闷" },
+            { key: "sad", emoji: "💙", label: "需要抱抱" },
+          ].map((m) => (
+            <button
+              key={m.key}
+              type="button"
+              onClick={() => handleMoodCheckIn(m.key)}
+              className="mood-card bg-violet-50 px-4 py-3 md:px-6 md:py-4 rounded-3xl border-2 border-violet-200 shadow-sm flex items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform"
+            >
+              <span className="text-xl md:text-2xl">{m.emoji}</span>
+              <span className="font-bold text-violet-900 text-sm md:text-base">今日心情 · {m.label}</span>
+            </button>
+          ))}
           {[
             { emoji: "☀️", label: "开心灌溉", color: "text-amber-500", action: handleWatering },
             { emoji: "🌧️", label: "倾诉烦恼", color: "text-blue-500", action: handleTroubles }
@@ -367,7 +427,13 @@ export default function GrowthEcosystem() {
           <directionalLight position={[5, 10, 5]} intensity={1.2} castShadow shadow-mapSize={1024} shadow-bias={-0.0001} />
           <directionalLight position={[-5, 5, -5]} intensity={0.3} color="#9BB7D4" />
           <Suspense fallback={null}>
-            <GrowthTree ref={treeComponentRef} leafCount={growthData.leafCount} treeSeed={growthData.seed} onCrisisTrigger={handleCrisisAlert} />
+            <GrowthTree
+              ref={treeComponentRef}
+              leafCount={growthData.leafCount}
+              treeSeed={growthData.seed}
+              growthStage={growthData.growthStage}
+              onCrisisTrigger={handleCrisisAlert}
+            />
             <Environment preset="city" />
             <ContactShadows position={[0, -1.2, 0]} opacity={0.7} scale={12} blur={2} far={4} color="#2a3b2c" />
           </Suspense>
