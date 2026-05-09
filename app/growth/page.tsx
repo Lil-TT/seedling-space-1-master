@@ -224,11 +224,11 @@ export default function GrowthEcosystem() {
   }, { scope: uiRef });
 
   return (
-    <div className="relative w-full h-screen bg-[#EBE9E0] overflow-hidden">
+    <div className="relative w-full min-h-[calc(100dvh-var(--app-header-offset))] h-[calc(100dvh-var(--app-header-offset))] bg-[#EBE9E0] overflow-hidden">
 
       {/* UI 交互层 */}
       <div ref={uiRef} className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between p-8 md:p-12">
-        <div className="growth-header flex justify-between items-start pointer-events-auto pt-24">
+        <div className="growth-header flex justify-between items-start pointer-events-auto pt-2 md:pt-4">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800 tracking-tight mb-3">成长生态</h1>
             <p className="text-slate-600 text-lg">每一份倾诉，都在让你的专属情绪树发芽。</p>

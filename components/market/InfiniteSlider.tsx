@@ -22,7 +22,13 @@ const gradients = [
   "bg-indigo-200"
 ];
 
-export default function InfiniteSlider({ items }: { items: MarketItem[] }) {
+export default function InfiniteSlider({
+  items,
+  isGuest = false,
+}: {
+  items: MarketItem[];
+  isGuest?: boolean;
+}) {
   const displayItems = items.length > 0 && items.length < 5
     ? Array.from({ length: 5 }).map((_, i) => ({ ...items[i % items.length], _key: `${items[i % items.length].id}-${i}` }))
     : items.map(i => ({ ...i, _key: i.id }));
@@ -256,17 +262,23 @@ export default function InfiniteSlider({ items }: { items: MarketItem[] }) {
           <p className="text-slate-700 leading-relaxed font-medium">{activeItem?.desc}</p>
         </div>
 
-        <button
-          onClick={handleTradeRequest}
-          disabled={tradeLoading}
-          className={`mt-6 w-full py-4 rounded-2xl font-black text-lg transition-all border-4 border-slate-900 
-            ${tradeLoading
-              ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-              : "bg-indigo-400 text-slate-900 hover:bg-indigo-300 shadow-[6px_6px_0px_0px_#0f172a] hover:translate-y-1 hover:translate-x-1 hover:shadow-[0px_0px_0px_0px_#0f172a] active:scale-95"
-            }`}
-        >
-          {tradeLoading ? "正在传递..." : "发起交换请求!"}
-        </button>
+        {isGuest ? (
+          <p className="mt-6 w-full py-4 text-center rounded-2xl border-4 border-dashed border-slate-300 bg-slate-100 text-slate-700 font-black text-sm">
+            参观模式 · 交换与私信请登录校内账号
+          </p>
+        ) : (
+          <button
+            onClick={handleTradeRequest}
+            disabled={tradeLoading}
+            className={`mt-6 w-full py-4 rounded-2xl font-black text-lg transition-all border-4 border-slate-900 
+              ${tradeLoading
+                ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                : "bg-indigo-400 text-slate-900 hover:bg-indigo-300 shadow-[6px_6px_0px_0px_#0f172a] hover:translate-y-1 hover:translate-x-1 hover:shadow-[0px_0px_0px_0px_#0f172a] active:scale-95"
+              }`}
+          >
+            {tradeLoading ? "正在传递..." : "发起交换请求!"}
+          </button>
+        )}
       </div>
 
       {/* --- 底部控制台 (卡通街机摇杆风) --- */}

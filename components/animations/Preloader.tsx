@@ -4,6 +4,7 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { SCHOOL_NAME, SCHOOL_TAGLINE } from "@/lib/school-brand";
 
 export default function Preloader() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,7 +49,7 @@ export default function Preloader() {
     <div
       ref={containerRef}
       // 固定在屏幕最上层，背景使用咱们刚刚配置好的莫兰迪背景色
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-background"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#fff8e7]"
     >
       <div className="w-[150px] md:w-[220px]">
         {/* React 化的 SVG 代码 */}
@@ -114,6 +115,10 @@ export default function Preloader() {
           </g>
         </svg>
       </div>
+      <p className="mt-8 text-center font-black text-slate-900 text-lg md:text-xl tracking-tight">
+        {SCHOOL_NAME}
+      </p>
+      <p className="mt-1 text-center font-bold text-amber-700 text-sm">{SCHOOL_TAGLINE}</p>
     </div>
   );
 }

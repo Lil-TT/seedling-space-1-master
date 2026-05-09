@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { getGuestSession } from "@/lib/guest-server";
+import GuestProfileShell from "@/components/profile/GuestProfileShell";
 import LogoutButton from "./LogoutButton";
 import TeacherDashboard from "./TeacherDashboard";
 import TradeInbox from "@/components/market/TradeInbox";
@@ -14,7 +16,11 @@ import ParentTeacherInbox from "@/components/messages/ParentTeacherInbox";
 
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions);
-    if (!session?.user) redirect("/api/auth/signin");
+    if (!session?.user) {
+        const guest = await getGuestSession();
+        if (guest) return <GuestProfileShell label={guest.label} />;
+        redirect("/guest");
+    }
 
     const user = session.user as any;
 
@@ -133,7 +139,7 @@ export default async function ProfilePage() {
     // UI 渲染层
     // ==========================================
     return (
-        <div className="min-h-screen pt-32 pb-20">
+        <div className="min-h-screen pt-4 pb-20 md:pt-6">
             <div className="container mx-auto px-6 max-w-5xl relative z-10">
 
                 {/* 1. 头部个人信息名片：增加 z-20 确保在背景墙上层 */}

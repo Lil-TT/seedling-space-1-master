@@ -11,7 +11,7 @@ export default function PuzzlePage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen pt-28 flex items-center justify-center text-slate-500 font-bold">
+      <div className="min-h-screen pt-4 flex items-center justify-center text-slate-500 font-bold md:pt-6">
         加载中…
       </div>
     );
@@ -19,7 +19,7 @@ export default function PuzzlePage() {
 
   if (!session || (session.user as any)?.role !== "STUDENT") {
     return (
-      <div className="min-h-screen pt-28 px-6 max-w-lg mx-auto text-center space-y-6">
+      <div className="min-h-screen pt-4 px-6 max-w-lg mx-auto text-center space-y-6 md:pt-6">
         <h1 className="text-3xl font-black text-slate-900">数字拼图</h1>
         <p className="text-slate-600 font-medium">
           仅学生账号可游玩并领取情绪币奖励。请先登录学生账号。
@@ -35,7 +35,7 @@ export default function PuzzlePage() {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-16 px-6">
+    <div className="min-h-screen pt-4 pb-16 px-6 md:pt-6">
       <div className="container mx-auto max-w-xl">
         <div className="mb-10 text-center space-y-2">
           <h1 className="text-4xl font-black text-slate-900 flex items-center justify-center gap-3">

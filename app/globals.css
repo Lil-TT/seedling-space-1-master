@@ -15,6 +15,16 @@
 
 /* 基础样式重置与设定 */
 @layer base {
+  :root {
+    /* 顶部跑马灯 h-8 + Navbar top-8 与导航条高度，避免主内容被 fixed 遮挡 */
+    --app-header-offset: 7.75rem;
+  }
+  @media (min-width: 768px) {
+    :root {
+      --app-header-offset: 8.5rem;
+    }
+  }
+
   body {
     background-color: var(--color-background);
     color: #1f2937; /* 相当于 text-gray-800 */

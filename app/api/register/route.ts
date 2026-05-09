@@ -12,6 +12,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "必填项缺失" }, { status: 400 });
     }
 
+    if (role === "STUDENT") {
+      return NextResponse.json(
+        {
+          error:
+            "学生账号不提供自助注册，请使用登录页的班级花名册点名登录（口令由班主任发放）。",
+        },
+        { status: 403 }
+      );
+    }
+
     // 1. 检查邮箱是否已占用
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {

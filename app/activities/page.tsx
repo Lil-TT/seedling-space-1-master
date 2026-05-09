@@ -12,6 +12,7 @@ export default function ActivitiesPage() {
   const [loading, setLoading] = useState(true);
   const [canPublish, setCanPublish] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
 
   const loadActivities = useCallback(() => {
     setLoading(true);
@@ -29,20 +30,35 @@ export default function ActivitiesPage() {
   }, [loadActivities]);
 
   useEffect(() => {
-    if (status !== "authenticated") return;
-    const role = (session?.user as any)?.role;
-    if (role === "STUDENT") {
-      fetch("/api/student/capabilities")
+    if (status === "authenticated") {
+      setIsGuest(false);
+      const role = (session?.user as any)?.role;
+      if (role === "STUDENT") {
+        fetch("/api/student/capabilities")
+          .then((r) => r.json())
+          .then((d) => setCanPublish(!!d.canPublishActivity))
+          .catch(() => setCanPublish(false));
+      } else {
+        setCanPublish(role === "TEACHER" || role === "PARENT");
+      }
+      return;
+    }
+    if (status === "unauthenticated") {
+      setCanPublish(false);
+      fetch("/api/guest/me")
         .then((r) => r.json())
-        .then((d) => setCanPublish(!!d.canPublishActivity))
-        .catch(() => setCanPublish(false));
-    } else {
-      setCanPublish(role === "TEACHER" || role === "PARENT");
+        .then((d) => {
+          const g = !!d.guest;
+          setIsGuest(g);
+        })
+        .catch(() => {
+          setIsGuest(false);
+        });
     }
   }, [session, status]);
 
   return (
-    <div className="min-h-screen pt-24 pb-12">
+    <div className="min-h-screen pt-4 pb-12 md:pt-6">
       <div className="container mx-auto px-6 max-w-6xl">
         
         {/* 页面头部 */}
@@ -52,6 +68,11 @@ export default function ActivitiesPage() {
               ⚔️ 委托公会大厅
             </h1>
             <p className="text-slate-500 font-medium">在这里接取成长任务，赚取属于你的情绪币与荣耀。</p>
+            {isGuest && (
+              <p className="mt-3 text-sm font-black text-amber-800 bg-amber-100 border-2 border-amber-300 rounded-xl px-4 py-2 inline-block">
+                访客模式：可浏览悬赏展板，接取与发布需校内登录。
+              </p>
+            )}
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
@@ -86,7 +107,7 @@ export default function ActivitiesPage() {
             <p className="text-slate-500 font-bold text-lg">目前没有悬赏任务，老师们可能在酝酿大计划！</p>
           </div>
         ) : (
-          <ActivitySlider items={activities} />
+          <ActivitySlider items={activities} isGuest={isGuest} />
         )}
 
       </div>

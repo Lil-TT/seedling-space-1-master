@@ -82,7 +82,7 @@ export default function SecretChatRoom({ params }: { params: Promise<{ id: strin
     };
 
     return (
-        <div className="min-h-screen bg-[#F5F5F3] pt-24 pb-12 font-sans relative overflow-hidden">
+        <div className="min-h-screen bg-[#F5F5F3] pt-4 pb-12 font-sans relative overflow-hidden md:pt-6">
             {/* 卡通背景装饰：类似贴纸的元素 */}
             <div className="absolute top-20 left-10 text-6xl opacity-20 rotate-12">🚀</div>
             <div className="absolute bottom-40 right-10 text-7xl opacity-20 -rotate-12">🧸</div>

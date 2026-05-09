@@ -25,7 +25,13 @@ const gradients = [
 
 const emojis = ["🏆", "🎯", "⚔️", "📜", "🚀"];
 
-export default function ActivitySlider({ items }: { items: Activity[] }) {
+export default function ActivitySlider({
+  items,
+  isGuest = false,
+}: {
+  items: Activity[];
+  isGuest?: boolean;
+}) {
   const displayItems = items.length > 0 && items.length < 5 
     ? Array.from({ length: 5 }).map((_, i) => ({...items[i % items.length], _key: `${items[i % items.length].id}-${i}`}))
     : items.map(i => ({...i, _key: i.id}));
@@ -185,13 +191,19 @@ export default function ActivitySlider({ items }: { items: Activity[] }) {
           <p className="mt-4 text-xs font-bold text-slate-400">目前已有 {activeItem?.participants?.length || 0} 名勇士接取</p>
         </div>
 
-        <button 
-          onClick={handleAcceptTask}
-          disabled={loadingId === activeItem?.id}
-          className="mt-6 w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg hover:bg-emerald-500 transition-all shadow-[0_10px_20px_rgba(16,185,129,0.3)] active:scale-95 disabled:opacity-50"
-        >
-          {loadingId === activeItem?.id ? "签署契约中..." : "⚔️ 揭榜接取悬赏"}
-        </button>
+        {isGuest ? (
+          <p className="mt-6 w-full py-4 text-center rounded-2xl border-4 border-dashed border-slate-300 bg-slate-100 text-slate-600 font-black text-sm">
+            访客可浏览详情 · 接取悬赏请使用校内账号登录
+          </p>
+        ) : (
+          <button
+            onClick={handleAcceptTask}
+            disabled={loadingId === activeItem?.id}
+            className="mt-6 w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg hover:bg-emerald-500 transition-all shadow-[0_10px_20px_rgba(16,185,129,0.3)] active:scale-95 disabled:opacity-50"
+          >
+            {loadingId === activeItem?.id ? "签署契约中..." : "⚔️ 揭榜接取悬赏"}
+          </button>
+        )}
       </div>
 
       {/* 底部控制台 (Controller) */}

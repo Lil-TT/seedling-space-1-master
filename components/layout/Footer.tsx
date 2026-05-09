@@ -45,7 +45,7 @@ export default function Footer() {
               想加入这片充满魔法的童心天地吗？无论是想要发布成长悬赏的老师，还是期待用闲置交换心愿的勇士，我们随时张开双臂。让每一次情绪波动，都化作成长的养分。
             </p>
             <Link
-              href="/api/auth/signin"
+              href="/login"
               className="group flex items-center justify-center h-14 pl-6 pr-1.5 rounded-full bg-[#E4D218] shadow-sm hover:bg-[#d4c316] transition-colors gap-3"
             >
               <span className="text-[15px] font-bold text-slate-900 tracking-wide">开启成长之旅</span>

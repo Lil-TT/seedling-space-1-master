@@ -9,6 +9,9 @@ import RivePlayer from "@rive-app/react-canvas";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import StarrySky from "@/components/scene/StarrySky"; // 引入星空组件
+import StudentHubDock from "@/components/home/StudentHubDock";
+import SchoolBadge from "@/components/brand/SchoolBadge";
+import { SCHOOL_NAME, SCHOOL_TAGLINE } from "@/lib/school-brand";
 
 import { coreCardsData, achievementsData, assetConfigs, numbersData, articlesData, brandsRow1, brandsRow2 } from "@/lib/dashboard-data";
 
@@ -185,7 +188,10 @@ export default function Dashboard() {
   );
 
   return (
-    <div ref={containerRef} className="relative w-full bg-slate-950">
+    <div
+      ref={containerRef}
+      className="relative w-full bg-slate-950 -mt-[var(--app-header-offset)]"
+    >
 
       {/* =========================================================
           底层 (z-0)：固定的 Hero 文本区 + 3D 星空
@@ -202,12 +208,19 @@ export default function Dashboard() {
         <div className="hero-overlay absolute inset-0 bg-slate-950 opacity-0 z-10 pointer-events-none"></div>
 
         {/* 文字容器 (为了配合深色星空，将文字颜色改为白色/发光质感) */}
-        <div className="hero-text-container relative z-20 text-center mt-[-10vh] mix-blend-screen">
-          <h1 className="hero-text text-[15vw] md:text-[11vw] font-black tracking-tighter text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.4)] leading-[0.85] mb-6">
-            流转星球<span className="text-emerald-400">.</span>
+        <div className="hero-text-container relative z-20 flex flex-col items-center text-center mt-[-8vh] px-4 mix-blend-screen">
+          <div className="hero-text mb-6 drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+            <SchoolBadge size="lg" showCaption={false} />
+          </div>
+          <h1 className="hero-text text-[11vw] md:text-[7vw] font-black tracking-tight text-white drop-shadow-[0_0_28px_rgba(255,255,255,0.35)] leading-[1] mb-4">
+            {SCHOOL_NAME}
+            <span className="text-amber-300"> · </span>
+            <span className="text-emerald-300">{SCHOOL_TAGLINE}</span>
           </h1>
-          <h2 className="hero-text text-2xl md:text-[3vw] text-slate-300 font-medium tracking-widest mt-4">
-            — 全校 <span className="text-white font-bold">{studentStars.length}</span> 位伙伴的微光汇聚于此 —
+          <h2 className="hero-text text-xl md:text-[2.4vw] text-slate-200 font-bold tracking-wide max-w-3xl">
+            校园微光星空 — 全校{" "}
+            <span className="text-amber-200 font-black">{studentStars.length}</span>{" "}
+            位伙伴在线闪耀 ✨
           </h2>
         </div>
       </section>
@@ -226,7 +239,8 @@ export default function Dashboard() {
         </div>
 
         {/* --- 下方的米色内容延续区 --- */}
-        <div className="relative w-full bg-background pt-[20vh] pointer-events-auto shadow-[0_-30px_50px_rgba(245,245,243,1)] rounded-t-[4rem]">
+        <div className="relative w-full bg-background pt-[12vh] md:pt-[16vh] pointer-events-auto shadow-[0_-30px_50px_rgba(245,245,243,1)] rounded-t-[4rem]">
+          <StudentHubDock />
           {/* SVG 背景追踪线条 */}
           <div className="absolute top-0 left-0 w-full h-full z-[1] pointer-events-none svg-path">
             <svg

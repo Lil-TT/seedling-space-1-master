@@ -119,6 +119,9 @@ model StudentProfile {
   moodStreak   Int       @default(0)     // 连续心情打卡天数
   lastPuzzleRewardDate String?         // YYYY-MM-DD 拼图每日奖励
 
+  // 花名册登录 PIN（bcrypt）；为空则用环境变量 DEFAULT_ROSTER_PIN（默认 1234）
+  rosterPinHash String?
+
   // 业务数据关联
   confessions    Confession[]      // 倾诉烦恼记录
   inspirations   Inspiration[]     // 灵感记录 (高度私密)
@@ -338,6 +341,16 @@ model TaskParticipant {
   
   student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
   activity    Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
+}
+
+// 外校访客：一次性 NFC/卡片口令（核销后写入 guest_session Cookie）
+model GuestInvite {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  label     String?   // 备注，如「开放日展台」
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }
 
 // ==========================================

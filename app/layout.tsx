@@ -9,8 +9,8 @@ import GlobalMarquee from "@/components/layout/GlobalMarquee";
 
 
 export const metadata: Metadata = {
-  title: "MindMarket | 童心市场与成长生态",
-  description: "基于情绪价值网的互动社区",
+  title: "光明小学 · 童心成长站",
+  description: "光明小学校园专属情绪成长与活动门户",
 };
 
 export default function RootLayout({
@@ -31,8 +31,8 @@ export default function RootLayout({
           {/* 顶部导航栏 */}
           <Navbar />
 
-          {/* 核心页面内容：增加 pt-20 为 fixed 的导航栏腾出空间 */}
-          <main className="relative z-10">
+          {/* 为跑马灯 + fixed Navbar 预留顶部空间（见 globals.css --app-header-offset） */}
+          <main className="relative z-10 pt-[var(--app-header-offset)]">
             {children}
           </main>
         </SessionProvider>

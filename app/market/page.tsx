@@ -11,6 +11,7 @@ export default function KidsMarket() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [marketItems, setMarketItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
 
   // 初始化拉取数据
   useEffect(() => {
@@ -20,10 +21,14 @@ export default function KidsMarket() {
         setMarketItems(data);
         setLoading(false);
       });
+    fetch("/api/guest/me")
+      .then((r) => r.json())
+      .then((d) => setIsGuest(!!d.guest))
+      .catch(() => setIsGuest(false));
   }, []);
 
   return (
-    <div ref={containerRef} className="min-h-screen pt-24 overflow-hidden">
+    <div ref={containerRef} className="min-h-screen pt-4 overflow-hidden md:pt-6">
       <MarketWrapper items={marketItems}>
         <div className="container mx-auto px-6 lg:px-12">
 
@@ -35,16 +40,31 @@ export default function KidsMarket() {
             <div>
               <h1 className="text-4xl font-bold text-slate-900 mb-2">童心市场</h1>
               <p className="text-slate-500">在这里，每一份期待都有回响 ✨</p>
+              {isGuest && (
+                <p className="mt-2 text-sm font-black text-rose-800 bg-rose-100 border-2 border-rose-200 rounded-xl px-3 py-1.5 inline-block">
+                  访客参观中 · 仅可浏览展厅
+                </p>
+              )}
             </div>
 
             {/* 触发按钮：使用拟物化风格保持一致 */}
-            <button
-              onClick={() => setIsUploadModalOpen(true)}
-              className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:bg-slate-800 hover:-translate-y-1 active:translate-y-0.5 transition-all flex items-center gap-2"
-            >
-              <span className="text-xl">+</span>
-              发布心愿
-            </button>
+            {isGuest ? (
+              <button
+                type="button"
+                disabled
+                className="px-8 py-4 bg-slate-300 text-slate-500 rounded-2xl font-bold border-4 border-dashed border-slate-400 cursor-not-allowed"
+              >
+                发布心愿（需登录）
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsUploadModalOpen(true)}
+                className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:bg-slate-800 hover:-translate-y-1 active:translate-y-0.5 transition-all flex items-center gap-2"
+              >
+                <span className="text-xl">+</span>
+                发布心愿
+              </button>
+            )}
           </div>
 
           {/* 核心展示区 */}
@@ -59,7 +79,7 @@ export default function KidsMarket() {
             /* =========================================================
                这里替换了原本的瀑布流，使用全新的 3D 拟物轮播台
             ========================================================= */
-            <InfiniteSlider items={marketItems} />
+            <InfiniteSlider items={marketItems} isGuest={isGuest} />
           )}
 
         </div>
